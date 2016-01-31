@@ -1,8 +1,17 @@
 import Foundation
 
+// Program Arguments
 let args = Process.arguments
 
-dump(args)
+// Utility Functions
+func prompt(prompt: String) -> String {
+    print(prompt, terminator: "")
+    let input = readLine(stripNewline: true)
+    if input == nil {
+        return ""
+    }
+    return input!
+}
 
-print("test")
-print("changed")
+// Game Loop
+parse(prompt("> "))
