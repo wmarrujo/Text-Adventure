@@ -13,5 +13,24 @@ func prompt(prompt: String) -> String {
     return input!
 }
 
-// Game Loop
+////////////////////////////////////////////////////////////////
+// GAME LOOP
+////////////////////////////////////////////////////////////////
+
 parse(prompt("> "))
+
+
+////////////////////////////////////////////////////////////////
+// TESTS
+////////////////////////////////////////////////////////////////
+var thing = Thing()
+var item = Item()
+var weapon = Weapon()
+var food = Food()
+var furniture = Furniture()
+var container = Container()
+var location = Location()
+var position = Position()
+var creature = Creature()
+var player = Player()
+var npc = NPC()
