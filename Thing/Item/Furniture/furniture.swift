@@ -1,7 +1,7 @@
 public class Furniture: Item {
 
   //TEMP
-  convenience init(name: String, description: String, size: Int, weight: Int) {
-      self.init(name: name, description: description, size: size, weight: weight)
+  convenience init(withID id: Int, withName name: String, thatLooksLike description: String, ofSize size: Int, thatWeighs weight: Int) {
+      self.init(id: id, name: name, description: description, size: size, weight: weight)
   }
 }

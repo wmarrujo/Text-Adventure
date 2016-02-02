@@ -6,7 +6,7 @@ public class Player: Creature {
     var password
     */
 
-    convenience init(name: String, description: String, size: Int, health: Int, location: Location) {
-        self.init(name: name, description: description, size: size, health: health, location: location)
+    convenience init(withID id: Int, name: String, description: String, size: Int, health: Int, location: Location) {
+        self.init(id: id, name: name, description: description, size: size, health: health, location: location)
     }
 }

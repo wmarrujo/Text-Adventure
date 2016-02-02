@@ -1,6 +1,6 @@
 public class Creature: Thing {
     //TODO: Complete stats
-    var health: Integer
+    var health: Int
     var location: Location
 
     //TODO: Complete based on chosen combat system
@@ -9,7 +9,10 @@ public class Creature: Thing {
     var defense: Integer
     */
 
-    convenience init(name: String, description: String, size: Int, health: Int, location: Location) {
-        self.init(name: name, description: description, size: size, health: health, location: location)
+    convenience init(withID id: Int, withName name: String, thatLooksLike description: String, ofSize size: Int, withHealth health: Int = 100, isInTheLocation location: Location) {
+        self.init(id: id, name: name, description: description, size: size)
+        self.health = health
+        self.location = location
+        super.init()
     }
 }
