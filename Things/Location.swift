@@ -23,28 +23,16 @@ public class Location: Thing {
     // METHODS
     ////////////////////////////////////////////////////////////////
     
-    func goUp(caller: Automata) {
-        directions["up"].traverse(caller)
+    func enter(automata: Automata) { // called when an automata enters a location
+        self.automata.add(automata)
     }
     
-    func goDown(caller: Automata) {
-        directions["down"].traverse(caller)
-    }
-    
-    func goNorth(caller: Automata) {
-        directions["north"].traverse(caller)
-    }
-    
-    func goSouth(caller: Automata) {
-        directions["south"].traverse(caller)
-    }
-    
-    func goEast(caller: Automata) {
-        directions["east"].traverse(caller)
-    }
-    
-    func goWest(caller: Automata) {
-        directions["west"].traverse(caller)
+    func go(direction: String, by caller: Automata) {
+        if let portal = directions[direction]? { // can go that way
+            portal.traverse(caller, from: self)
+        } else { // can't go that way
+            // send a message
+        }
     }
     
 }
