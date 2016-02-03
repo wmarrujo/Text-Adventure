@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find . -name '*.swift' -exec swiftc {} +;
+find . -name "*.swift" -exec swiftc {} +;
