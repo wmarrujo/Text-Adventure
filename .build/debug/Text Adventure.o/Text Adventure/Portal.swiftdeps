@@ -1,0 +1,103 @@
+### Swift dependencies file v0 ###
+provides-top-level:
+- "Portal"
+provides-nominal:
+- "C13TextAdventure6Portal"
+provides-member:
+- ["C13TextAdventure6Portal", ""]
+provides-dynamic-lookup:
+depends-top-level:
+- !private "otherLocation"
+- "Item"
+- !private "FloatLiteralType"
+- !private "=="
+- "Location"
+- !private "IntegerLiteralType"
+- "String"
+- "Portal"
+- !private "StringLiteralType"
+- "Automata"
+depends-member:
+- ["Ps9AnyObject", "connection"]
+- ["Ps9AnyObject", "init"]
+- !private ["Ps9AnyObject", "otherLocation"]
+- ["Ps9AnyObject", "traverse"]
+- ["Ps9AnyObject", ""]
+- !private ["Sb", "_getBuiltinLogicValue"]
+- !private ["Ps25BooleanLiteralConvertible", "_getBuiltinLogicValue"]
+- !private ["Ps11BooleanType", "_getBuiltinLogicValue"]
+- !private ["Ps23CustomStringConvertible", "_getBuiltinLogicValue"]
+- !private ["Ps9Equatable", "_getBuiltinLogicValue"]
+- ["Ps9Equatable", "connection"]
+- ["Ps9Equatable", "init"]
+- !private ["Ps9Equatable", "otherLocation"]
+- ["Ps9Equatable", "traverse"]
+- ["Ps9Equatable", ""]
+- !private ["Ps8Hashable", "_getBuiltinLogicValue"]
+- ["Ps8Hashable", "connection"]
+- ["Ps8Hashable", "init"]
+- !private ["Ps8Hashable", "otherLocation"]
+- ["Ps8Hashable", "traverse"]
+- ["Ps8Hashable", ""]
+- ["C13TextAdventure4Item", "Automata"]
+- ["C13TextAdventure4Item", "Location"]
+- ["C13TextAdventure4Item", "String"]
+- ["C13TextAdventure4Item", "connection"]
+- ["C13TextAdventure4Item", "init"]
+- !private ["C13TextAdventure4Item", "otherLocation"]
+- ["C13TextAdventure4Item", "traverse"]
+- ["C13TextAdventure4Item", ""]
+- ["C13TextAdventure6Portal", "Automata"]
+- ["C13TextAdventure6Portal", "Location"]
+- ["C13TextAdventure6Portal", "String"]
+- ["C13TextAdventure6Portal", "connection"]
+- ["C13TextAdventure6Portal", "deinit"]
+- ["C13TextAdventure6Portal", "init"]
+- !private ["C13TextAdventure6Portal", "otherLocation"]
+- ["C13TextAdventure6Portal", "traverse"]
+- !private ["Vs12StaticString", "deinit"]
+- ["C13TextAdventure5Thing", "Automata"]
+- ["C13TextAdventure5Thing", "Location"]
+- ["C13TextAdventure5Thing", "String"]
+- ["C13TextAdventure5Thing", "connection"]
+- !private ["C13TextAdventure5Thing", "otherLocation"]
+- ["C13TextAdventure5Thing", "traverse"]
+- !private ["Ps33_BuiltinBooleanLiteralConvertible", "_getBuiltinLogicValue"]
+- !private ["Ps21_ObjectiveCBridgeable", "_getBuiltinLogicValue"]
+- !private ["Ps12_Reflectable", "_getBuiltinLogicValue"]
+depends-nominal:
+- "Ps9AnyObject"
+- !private "Sb"
+- !private "Ps25BooleanLiteralConvertible"
+- !private "Ps11BooleanType"
+- !private "Ps23CustomStringConvertible"
+- "Ps9Equatable"
+- "Ps8Hashable"
+- "C13TextAdventure4Item"
+- "C13TextAdventure6Portal"
+- !private "Vs12StaticString"
+- "C13TextAdventure5Thing"
+- !private "Ps33_BuiltinBooleanLiteralConvertible"
+- !private "Ps21_ObjectiveCBridgeable"
+- !private "Ps12_Reflectable"
+depends-dynamic-lookup:
+depends-external:
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/Swift.swiftmodule"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/UnicodeShims.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/RuntimeStubs.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/SwiftStdint.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/SwiftStddef.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/RuntimeShims.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/LibcShims.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/RefCount.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/HeapObject.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/GlobalObjects.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/FoundationShims.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/CoreFoundationShims.h"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/shims/module.map"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/Foundation.swiftmodule"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/Darwin.swiftmodule"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/Dispatch.swiftmodule"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/ObjectiveC.swiftmodule"
+- "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2016-01-11-a.xctoolchain/usr/lib/swift/macosx/x86_64/CoreGraphics.swiftmodule"
+interface-hash: "d5da7411bf3506717345a947d80df690"
