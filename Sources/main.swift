@@ -1,14 +1,6 @@
 import Foundation
 
 // Utility Functions
-func prompt(prompt: String) -> String {
-    print(prompt, terminator: "")
-    let input = readLine(stripNewline: true)
-    if input == nil {
-        return ""
-    }
-    return input!
-}
 
 ////////////////////////////////////////////////////////////////
 // SETUP
@@ -18,13 +10,13 @@ func prompt(prompt: String) -> String {
 let args = Process.arguments
 
 // Game Variables
-var currentPlayer: Player = Player(name: prompt("name: "))
+//var currentPlayer: Player = Player(name: prompt("name: "), andDscription: "", withHealth: 100, atLocation: ) // FIXME: use default description (don't know why it's crashing)
 
 ////////////////////////////////////////////////////////////////
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
-parse(prompt("> "))
+print("launch")
 
 ////////////////////////////////////////////////////////////////
 // TESTS
@@ -43,8 +35,9 @@ parse(prompt("> "))
   var player = Player()
   var npc = NPC()
 */
-
+/*
 var broom = Item(withName: "Broom", thatLooksLike: "A sturdy, old broomstick", ofSize: 3, thatWeighs: 3)
 var itemSet: Set<Item> = [broom]
 
 var location = Location(withName: "Sample Room", thatLooksLike: "A plain, boring, empty room.", ofSize: 10, containing: itemSet)
+*/

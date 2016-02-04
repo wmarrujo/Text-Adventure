@@ -13,14 +13,27 @@ class SYStructure { // Defines Node in the Tree
 class SYAction: SYStructure {
     // DATA
     let command: SYCommand
-    let selection: SYSelector
+    let selector: SYSpecifier?
     
     // INITIALIZERS
+    init(withCommand command: SYCommand, andSelector selector: SYSpecifier? = nil) {
+        self.command = command
+        self.selector = selector
+    }
+    
+    convenience init(withCommand command: String, andSelector selector: SYSpecifier? = nil) {
+        self.init(withCommand: SYCommand(command), andSelector: selector)
+    }
     
     // METHODS
     
-    func perform(caller: Player, command: SYCommand, to selector: SYSpecifier) {
-        caller.perform(command.command, to: caller.findItemsWithRule(selector.match))
+    func perform(caller: Player) {
+        // FIXME: there's a bug where it won't find perform function, but it will if it's typecast.
+        if let selector = self.selector {
+            caller.perform(self.command.command, toItems: caller.findItemsWithRule(selector.match)) // call the command on the selected items (find items first)
+        } else {
+            caller.perform(self.command.command) // call command on the caller itself
+        }
     }
 }
 
@@ -29,15 +42,15 @@ class SYAction: SYStructure {
 
 class SYSpecifier: SYStructure { // selects the correct object(s) from list of possible matches
     // DATA
-    let match: (Set<Item>) -> Set<Item>
+    let match: (Item) -> Bool // TODO: change all to this, not working with sets, the find loop does that
     
     // INITIALIZERS
-    init(_ match: (Set<Item>) -> Set<Item>) {
+    init(_ match: (Item) -> Bool) {
         self.match = match
     }
     
-    init(_ match: (Set<Item>) -> Set<Item>, andCondition condition: (Set<Item>) -> Set<Item>) {
-        self.match = match(condition)
+    convenience init(_ match: (Item) -> Bool, andCondition otherCondition: (Item) -> Bool) {
+        self.init({match($0) && otherCondition($0)}) // multiple conditions
     }
     
     // METHODS
@@ -50,14 +63,8 @@ class SYThing: SYSpecifier { // special selector to get things by their name
     
     // INITIALIZERS
     init(_ name: String) {
-        super.init({(items: Set<Item>) -> Set<Item> in
-            let matches: Set<Item>
-            for item in items {
-                if item.name == name {
-                    matches.insert(item)
-                }
-            }
-            return matches
+        super.init({(item: Item) -> Bool in
+            return item.name == name
         })
     }
     

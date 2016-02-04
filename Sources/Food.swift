@@ -1,7 +1,26 @@
 public class Food: Item {
-  func consume() {}
-
-  convenience init(withID id: Int, withName name: String, thatLooksLike description: String, ofSize size: Int, thatWeighs weight: Int) {
-      self.init(id: id, name: name, description: description, size: size, weight: weight)
-  }
+    
+    ////////////////////////////////////////////////////////////////
+    // INSTANCE VARIABLES
+    ////////////////////////////////////////////////////////////////
+    
+    
+    
+    ////////////////////////////////////////////////////////////////
+    // INITIALIZATION
+    ////////////////////////////////////////////////////////////////
+    
+    // TODO: uncomment when it changes anything from the init of Item (it's superclass)
+    /*init(named name: String, withDescription description: String = "", andWeight weight: Int, withAttributes attributes: [String] = []) {
+        super.init(named: name, withDescription: description, andWeight: weight, withAttributes: attributes)
+    }*/
+    
+    ////////////////////////////////////////////////////////////////
+    // METHODS
+    ////////////////////////////////////////////////////////////////
+    
+    func consume(caller: Player) {
+        
+    }
+    
 }

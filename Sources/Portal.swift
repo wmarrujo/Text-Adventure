@@ -1,4 +1,4 @@
-public class Portal: Item {
+public class Portal: Thing {
     
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES
@@ -10,8 +10,8 @@ public class Portal: Item {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(named name: String, withDescription description: String, from: Location, to: Location) {
-        let connection = (from, to)
+    init(named name: String, withDescription description: String = "", from: Location, to: Location) {
+        self.connection = (from, to)
         super.init(name, description)
     }
     
@@ -19,14 +19,16 @@ public class Portal: Item {
     // METHODS
     ////////////////////////////////////////////////////////////////
     
-    func traverse(caller: Automata, from: Location) { // does the moving
-        if self.connection.1 == from { // came from connection.1 location
-            let otherLocation = self.connection.2
+    func traverse(caller: Automata, from previousLocation: Location) { // does the moving
+        let destination: Location
+        if self.connection.0 == previousLocation { // came from connection.1 location
+            destination = self.connection.1
         } else { // came from connection.2 location
-            let otherLocation = self.connection.1
+            destination = self.connection.0
         }
         
-        otherLocation.enter(caller)
+        caller.location = destination // update caller's location
+        destination.enter(caller) // update location's contained automata
     }
     
 }

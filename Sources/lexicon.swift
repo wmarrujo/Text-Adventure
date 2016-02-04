@@ -1,10 +1,9 @@
 let lexicon: [String: SYStructure] = [
     // Phrases
     "pick up":SYCommand("take"),
+    "take inventory":SYAction(withCommand: "show inventory"),
     
     // Things
-    "inventory":SYThing("inventory"),
-    "inventories":SYThing("inventory"),
     
     // Commands
     "take":SYCommand("take"),

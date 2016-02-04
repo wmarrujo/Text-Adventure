@@ -11,7 +11,7 @@ public class Item: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(named name: String, withDescription description: String, andWeight weight: Int, withAttributes attributes: [String] = []) {
+    init(named name: String, withDescription description: String = "", andWeight weight: Int, withAttributes attributes: [String] = []) {
         self.weight = weight
         self.attributes = attributes
         super.init(name, description)

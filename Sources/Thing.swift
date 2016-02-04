@@ -15,7 +15,7 @@ public class Thing: Equatable, Hashable {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(name: String, _ description: String) {
+    init(_ name: String, _ description: String = "") {
         self.name = name
         self.description = description
     }

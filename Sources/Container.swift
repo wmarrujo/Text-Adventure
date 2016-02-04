@@ -1,7 +1,24 @@
 public class Container: Item {
-    var items = Set<Item>()
-
-    convenience init(withID id: Int, withName name: String, thatLooksLike description: String, ofSize size: Int, thatWeighs weight: Int, thatContains items: Set<Item> = Set<Item>()) {
-        self.init(id: id, name: name, description: description, size: size, weight: weight, items: items)
+    
+    ////////////////////////////////////////////////////////////////
+    // INSTANCE VARIABLES
+    ////////////////////////////////////////////////////////////////
+    
+    var contents: Set<Item>
+    
+    ////////////////////////////////////////////////////////////////
+    // INITIALIZATION
+    ////////////////////////////////////////////////////////////////
+    
+    init(named name: String, withDescription description: String = "", andWeight weight: Int, withAttributes attributes: [String] = [], withContents contents: Set<Item> = []) {
+        self.contents = contents
+        super.init(named: name, withDescription: description, andWeight: weight, withAttributes: attributes)
     }
+    
+    ////////////////////////////////////////////////////////////////
+    // METHODS
+    ////////////////////////////////////////////////////////////////
+    
+    
+    
 }
