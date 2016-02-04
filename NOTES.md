@@ -1,5 +1,15 @@
 #Notes
 
+##Style
+
+The swift package manager requires everything under source to be at the same level (if we want it to compile to one executable/target)
+
+Also, look at the template to build your files
+
+Use a functional style as much as possible
+
+##Todo
+
 - Come up with a name
 - Is there a better name for "Automata"?
 - Need to add a way to display custom messages for actions
