@@ -16,11 +16,13 @@ let args = Process.arguments
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
+
 func gameLoop() {
   while(true) {
       print("launch")
   }
 }
+
 
 ////////////////////////////////////////////////////////////////
 // TESTS
@@ -47,10 +49,6 @@ func gameLoop() {
   }
 
 
-
-
-
-
 /*
   var thing = Thing("name", "description", 0)
   var item = Item()
@@ -69,4 +67,10 @@ var broom = Item(withName: "Broom", thatLooksLike: "A sturdy, old broomstick", o
 var itemSet: Set<Item> = [broom]
 
 var location = Location(withName: "Sample Room", thatLooksLike: "A plain, boring, empty room.", ofSize: 10, containing: itemSet)
+*/
+/*
+=======
+var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeight: 5, withAttributes: ["sturdy", "old"])
+var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])
+
 */

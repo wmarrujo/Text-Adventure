@@ -1,9 +1,8 @@
 func parse(string: String) {
-    let words = string.componentsSeparatedByString(" ")
-    dump(words)
-    //let syntaxTree = buildSyntaxTree(words)
+    /*var newstring = string.lowercaseString
+    print(string)*/
 }
 
-/*func buildSyntaxTree(words: [String]) {
-
-}*/
+func tokenize() {
+    
+}

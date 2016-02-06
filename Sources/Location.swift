@@ -12,7 +12,7 @@ public class Location: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(withName name: String, andDescription description: String = "", withAutomata automata: Set<Automata> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil) {
+    init(named name: String, withDescription description: String = "", withAutomata automata: Set<Automata> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil) {
         self.automata = automata
         self.contents = contents
         self.directions = ["up":up, "down":down, "north":north, "south":south, "east":east, "west":west]
@@ -33,6 +33,23 @@ public class Location: Thing {
             }
         }
         return items
+    }
+    
+    override func showDescription() -> String {
+        var description = self.description
+        if !self.contents.isEmpty {
+            description += "\n You see around you:"
+            for item in self.contents {
+                description += "\n\t" + item.showDescription()
+            }
+        }
+        if !self.automata.isEmpty {
+            description += "\n here with you is:"
+            for automata in self.automata {
+                description += "\n\t" + automata.showDescription()
+            }
+        }
+        return description
     }
     
     // INTERACTIONS

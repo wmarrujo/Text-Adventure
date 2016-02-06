@@ -4,8 +4,8 @@ public class Thing: Equatable, Hashable {
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
     
-    var name: String
-    var description: String
+    var name: String // more of an "identifier" than a "name" really
+    var description: String // what gets printed out
     
     public var hashValue: Int { // To conform with Hashable
         return unsafeAddressOf(self).hashValue
@@ -24,7 +24,9 @@ public class Thing: Equatable, Hashable {
     // METHODS
     ////////////////////////////////////////////////////////////////
     
-    
+    func showDescription() -> String {
+        return description
+    }
     
 }
 
