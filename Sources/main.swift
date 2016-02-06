@@ -16,11 +16,40 @@ let args = Process.arguments
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
-print("launch")
+func gameLoop() {
+  while(true) {
+      print("launch")
+  }
+}
 
 ////////////////////////////////////////////////////////////////
 // TESTS
-////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+
+/* [[[TEST FAILED]]]
+
+  let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
+  dispatch_async(dispatch_get_global_queue(priority, 0)) {
+  	// do some task
+  	dispatch_async(dispatch_get_main_queue()) {
+  		// update some UI
+  	}
+  }
+*/
+
+
+  var GlobalUtilityQueue: dispatch_queue_t {
+    return dispatch_get_global_queue(nil, Int(QOS_CLASS_UTILITY.value), 0)
+  }
+
+  dispatch_async(GlobalUtilityQueue) {
+    gameLoop()
+  }
+
+
+
+
+
 
 /*
   var thing = Thing("name", "description", 0)

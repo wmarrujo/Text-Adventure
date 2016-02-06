@@ -11,7 +11,7 @@ public class Automata: Thing {
     // INITIALIZERS
     ////////////////////////////////////////////////////////////////
 
-    init(withName name: String, andDscription description: String = "", withHealth health: Int, atLocation location: Location) {
+    init(withName name: String, andDescription description: String = "", withHealth health: Int, atLocation location: Location) {
         self.health = health
         self.location = location
         super.init(name, description)
@@ -20,9 +20,9 @@ public class Automata: Thing {
     ////////////////////////////////////////////////////////////////
     // METHODS
     ////////////////////////////////////////////////////////////////
-    
+
     func move(direction: String) {
         self.location.go(direction, by: self)
     }
-    
+
 }
