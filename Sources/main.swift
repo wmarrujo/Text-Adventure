@@ -16,28 +16,11 @@ let args = Process.arguments
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
-print("launch")
+print("> ", terminator: "")
 
 ////////////////////////////////////////////////////////////////
 // TESTS
 ////////////////////////////////////////////////////////////////
 
-/*
-  var thing = Thing("name", "description", 0)
-  var item = Item()
-  var weapon = Weapon()
-  var food = Food()
-  var furniture = Furniture()
-  var container = Container()
-  var location = Location()
-  var position = Position()
-  var creature = Creature()
-  var player = Player()
-  var npc = NPC()
-*/
-/*
-var broom = Item(withName: "Broom", thatLooksLike: "A sturdy, old broomstick", ofSize: 3, thatWeighs: 3)
-var itemSet: Set<Item> = [broom]
-
-var location = Location(withName: "Sample Room", thatLooksLike: "A plain, boring, empty room.", ofSize: 10, containing: itemSet)
-*/
+var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeight: 5, withAttributes: ["sturdy", "old"])
+var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])

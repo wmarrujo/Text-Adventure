@@ -8,10 +8,6 @@ An as yet unknown adventure. In Text!
 
 ##How to Run
 
-1. Run `swift build` in the root directory (the one with this readme git)
-2. The executable is in `.build/debug/Text-Adventure`
-
-##Contributers:
-
-- William Marrujo
-- Gabriel Marimon
+0. Make sure you have a *Development* version of the latest snapshot of swift (or it won't have `swift build`)
+1. Run `swift build` in the root directory of the package (the one with the `Package.swift`)
+2. The executable is in `.build/debug/Text-Adventure` (or whatever the target is called, depending on your filesystem)

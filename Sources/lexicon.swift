@@ -4,13 +4,18 @@ let lexicon: [String: SYStructure] = [
     "take inventory":SYAction(withCommand: "show inventory"),
     
     // Things
+    "broom":SYThing("broom"),
     
     // Commands
     "take":SYCommand("take"),
+    "look":SYCommand("look"),
     
     // Specifiers
     "all":SYSpecifier({(item: Item) -> Bool in true}),
-    "green":SYSpecifier({(item: Item) -> Bool in item.attributes.contains("green")})
+    "green":SYSpecifier({(item: Item) -> Bool in item.attributes.contains("green")}),
+    "sturdy":SYSpecifier({(item: Item) -> Bool in item.attributes.contains("sturdy")}),
+    "old":SYSpecifier({(item: Item) -> Bool in item.attributes.contains("old")}),
+    "heavy":SYSpecifier({(item: Item) -> Bool in item.weight > 10})
 ]
 
 /*

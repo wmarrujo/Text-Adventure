@@ -11,7 +11,7 @@ public class Automata: Thing {
     // INITIALIZERS
     ////////////////////////////////////////////////////////////////
 
-    init(withName name: String, andDscription description: String = "", withHealth health: Int, atLocation location: Location) {
+    init(named name: String, andDscription description: String = "", withHealth health: Int, atLocation location: Location) {
         self.health = health
         self.location = location
         super.init(name, description)
