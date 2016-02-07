@@ -1,86 +1,109 @@
-// Overarching Type Class
-
-class SYStructure { // Defines Node in the Tree
-    // DATA
-    
-    // INITIALIZERS
-    
-    // METHODS
-}
-
-// Container Nodes
-
-class SYAction: SYStructure {
-    // DATA
-    let command: SYCommand
-    let selector: SYSpecifier?
-    
-    // INITIALIZERS
-    init(withCommand command: SYCommand, andSelector selector: SYSpecifier? = nil) {
-        self.command = command
-        self.selector = selector
-    }
-    
-    convenience init(withCommand command: String, andSelector selector: SYSpecifier? = nil) {
-        self.init(withCommand: SYCommand(command), andSelector: selector)
-    }
-    
-    // METHODS
-    
-    func perform(caller: Player) {
-        // FIXME: there's a bug where it won't find perform function, but it will if it's typecast.
-        if let selector = self.selector {
-            caller.perform(self.command.command, toItems: caller.findItemsWithRule(selector.match)) // call the command on the selected items (find items first)
-        } else {
-            caller.perform(self.command.command) // call command on the caller itself
-        }
+class PhrasalCategory: Hashable {
+    var hashValue: Int { // To conform with Hashable
+        return unsafeAddressOf(self).hashValue
     }
 }
 
-// Individual Nodes
+func ==(lhs: PhrasalCategory, rhs: PhrasalCategory) -> Bool {
+  return lhs.hashValue == rhs.hashValue
+}
 
+class LexicalCategory: PhrasalCategory {
+    let word: String
+    
+    init(_ word: String) {
+        self.word = word
+    }
+}
 
-class SYSpecifier: SYStructure { // selects the correct object(s) from list of possible matches
-    // DATA
-    let match: (Item) -> Bool // TODO: change all to this, not working with sets, the find loop does that
-    
-    // INITIALIZERS
-    init(_ match: (Item) -> Bool) {
-        self.match = match
-    }
-    
-    convenience init(_ match: (Item) -> Bool, andCondition otherCondition: (Item) -> Bool) {
-        self.init({match($0) && otherCondition($0)}) // multiple conditions
-    }
-    
-    // METHODS
+////////////////////////////////////////////////////////////////
+// LEXICAL CATEGORIES
+////////////////////////////////////////////////////////////////
+
+class Verb: LexicalCategory { // Performs Specific Action
     
 }
 
-
-class SYThing: SYSpecifier { // special selector to get things by their name
-    // DATA
-    
-    // INITIALIZERS
-    init(_ name: String) {
-        super.init({(item: Item) -> Bool in
-            return item.name == name
-        })
-    }
-    
-    // METHODS
+class Noun: LexicalCategory { // Refers to Items
     
 }
 
-class SYCommand: SYStructure { // calls the correct function
-    // DATA
-    let command: String
+class Adjective: LexicalCategory { // An Item Filter by Attribute
     
-    // INITIALIZERS
-    init(_ command: String) {
-        self.command = command
+}
+
+class Adverb: LexicalCategory { // An Action Modifier (argument)
+    
+}
+
+class Preposition: LexicalCategory { // An Item Filter by Relation
+    
+}
+
+class Conjunction: LexicalCategory { // A Constructor for Compound Clauses
+    
+}
+
+class Determiner: LexicalCategory { // Specifies by Quantity or a Default // TODO: not sure on this one
+    
+}
+
+////////////////////////////////////////////////////////////////
+// PHRASAL CATEGORIES
+////////////////////////////////////////////////////////////////
+
+class NounPhrase: PhrasalCategory { // Selects Items
+    let determiner: Determiner?
+    let adjectives: Set<Adjective>
+    let noun: Noun
+    let prepositionalPhrase: PrepositionalPhrase?
+    
+    init(withDeterminer determiner: Determiner? = nil, withAdjectives adjectives: Set<Adjective> = [], withNoun noun: Noun, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil) {
+        self.determiner = determiner
+        self.adjectives = adjectives
+        self.noun = noun
+        self.prepositionalPhrase = prepositionalPhrase
     }
     
-    // METHODS
+    func nounPhraseByRemovingPrepositionalPhrase() -> NounPhrase {
+        return NounPhrase(withDeterminer: self.determiner, withAdjectives: self.adjectives, withNoun: self.noun)
+    }
+}
+
+class PrepositionalPhrase: PhrasalCategory { // Filters Items
+    let preposition: Preposition
+    let nounPhrase: NounPhrase?
+    
+    init(withPreposition preposition: Preposition, withNounPhrase nounPhrase: NounPhrase? = nil) {
+        self.preposition = preposition
+        self.nounPhrase = nounPhrase
+    }
+}
+
+class VerbPhrase: PhrasalCategory { // Performs Action
+    let verb: Verb
+    let nounPhrase: NounPhrase?
+    let prepositionalPhrase: PrepositionalPhrase?
+    let adverb: Adverb?
+    
+    init(withVerb verb: Verb, withNounPhrase nounPhrase: NounPhrase? = nil, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil, withAdverb adverb: Adverb?) {
+        self.verb = verb
+        self.nounPhrase = nounPhrase
+        self.prepositionalPhrase = prepositionalPhrase
+        self.adverb = adverb
+    }
+}
+
+// CONJUNCTION FORMS
+
+class NounPhraseConjunction: PhrasalCategory {
+    
+}
+
+class PrepositionalPhraseConjunction: PhrasalCategory {
+    
+}
+
+class VerbPhraseConjunction: PhrasalCategory {
     
 }

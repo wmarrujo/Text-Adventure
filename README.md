@@ -2,6 +2,10 @@
 
 An as yet unknown adventure. In Text!
 
+##Useful Things
+
+[Swift Documentation](http://swiftdoc.org)
+
 ##Specifics
 
 - Written in Swift

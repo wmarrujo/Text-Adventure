@@ -11,7 +11,7 @@ Use a functional style as much as possible
 ##Todo
 
 - Come up with a name
-- Is there a better name for "Automata"?
+- Is there a better name for "Creature"?
 - Need to add a way to display custom messages for actions
 - We should set up a server application and a separate client application
 - Decide which combat system to use

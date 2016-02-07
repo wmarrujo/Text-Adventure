@@ -19,7 +19,7 @@ public class Portal: Thing {
     // METHODS
     ////////////////////////////////////////////////////////////////
     
-    func traverse(caller: Automata, from previousLocation: Location) { // does the moving
+    func traverse(caller: Creature, from previousLocation: Location) { // does the moving
         let destination: Location
         if self.connection.0 == previousLocation { // came from connection.1 location
             destination = self.connection.1
@@ -28,7 +28,7 @@ public class Portal: Thing {
         }
         
         caller.location = destination // update caller's location
-        destination.enter(caller) // update location's contained automata
+        destination.enter(caller) // update location's contained creature
     }
     
 }

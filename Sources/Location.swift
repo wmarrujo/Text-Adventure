@@ -4,7 +4,7 @@ public class Location: Thing {
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
     
-    var automata: Set<Automata>
+    var creature: Set<Creature>
     var contents: Set<Item>
     var directions: [String:Portal?]
     
@@ -12,8 +12,8 @@ public class Location: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(named name: String, withDescription description: String = "", withAutomata automata: Set<Automata> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil) {
-        self.automata = automata
+    init(named name: String, withDescription description: String = "", withCreature creature: Set<Creature> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil) {
+        self.creature = creature
         self.contents = contents
         self.directions = ["up":up, "down":down, "north":north, "south":south, "east":east, "west":west]
         super.init(name, description)
@@ -43,10 +43,10 @@ public class Location: Thing {
                 description += "\n\t" + item.showDescription()
             }
         }
-        if !self.automata.isEmpty {
+        if !self.creature.isEmpty {
             description += "\n here with you is:"
-            for automata in self.automata {
-                description += "\n\t" + automata.showDescription()
+            for creature in self.creature {
+                description += "\n\t" + creature.showDescription()
             }
         }
         return description
@@ -67,11 +67,11 @@ public class Location: Thing {
     
     // Movement
     
-    func enter(automata: Automata) { // called when an automata enters a location
-        self.automata.insert(automata)
+    func enter(creature: Creature) { // called when an creature enters a location
+        self.creature.insert(creature)
     }
     
-    func go(direction: String, by caller: Automata) {
+    func go(direction: String, by caller: Creature) {
         if let portal = directions[direction]! { // can go that way
             // TODO: call exit from this location
             portal.traverse(caller, from: self)
