@@ -5,11 +5,11 @@ func parse(string: String) {
     dump(words)
     
     // DICTIONARY LOOKUP
-    let tokens = words.map({lexicon[$0]})
+    let tokens = words.map({ lexicon[$0] })
     dump(tokens)
     
     // PARSING
-    
+    //let syntaxTree = construct(tokens)
     
     // BINDING
     
@@ -22,7 +22,25 @@ func parse(string: String) {
     
 }
 
+/*
+func construct(tokens: [Set<PhrasalCategory>])/* -> PhrasalCategory*/ {
+    var sentence = tokens
+    var index = sentence.count - 1
+    
+    while sentence.count != 1 {
+        for rule in grammar {
+            if matchGrammar(rule, toSentence: sentence) {
+                
+            }
+        }
+    }
+    
+    //return
+}
 
+func matchGrammar(grammar: Rule, toSentence tokens: [Set<PhrasalCategory>]) -> Bool {
+    
+}*/
 
 
 /*

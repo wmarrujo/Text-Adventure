@@ -28,11 +28,11 @@ public class Player: Creature {
         switch command {
             case "take":
                 if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // has a prepositional phrase and the prepositional phrase has a noun phrase
-                    switch selector!.prepositionalPhrase!.preposition.word {
+                    switch selector!.prepositionalPhrase!.preposition!.word {
                         case "from":
                             self.take(selector!.nounPhraseByRemovingPrepositionalPhrase(), from: nounPhrase, modifier: modifier)
                         default:
-                            message("I don't know how to take \(selector!.prepositionalPhrase!.preposition.word) ...")
+                            message("I don't know how to take \(selector!.prepositionalPhrase!.preposition!.word) ...")
                     }
                 } else if let nounPhrase = selector { // take [NP] // there is not a prepositional phrase
                     self.take(nounPhrase, modifier: modifier)
@@ -41,11 +41,11 @@ public class Player: Creature {
                 }
             case "give":
                 if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // there is a prepositional phrase
-                    switch selector!.prepositionalPhrase!.preposition.word {
+                    switch selector!.prepositionalPhrase!.preposition!.word {
                         case "to": // give [NP] to [NP]
                             self.give(selector!, to: nounPhrase, modifier: modifier)
                         default:
-                            message("I don't know how to give \(selector!.prepositionalPhrase!.preposition.word) ...")
+                            message("I don't know how to give \(selector!.prepositionalPhrase!.preposition!.word) ...")
                     }
                 } else { // there is not a prepositional phrase
                     message("no target specified")
@@ -56,20 +56,22 @@ public class Player: Creature {
                 }
             case "throw":
                 if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // there is a prepositional phrase
-                    switch selector!.prepositionalPhrase!.preposition.word {
+                    switch selector!.prepositionalPhrase!.preposition!.word {
                         case "at":
                             self.`throw`(selector!.nounPhraseByRemovingPrepositionalPhrase(), at: nounPhrase, modifier: modifier)
+                        case "to":
+                            self.give(selector!.nounPhraseByRemovingPrepositionalPhrase(), to: nounPhrase, modifier: modifier)
                         default:
-                            message("I don't know how to throw \(selector!.prepositionalPhrase!.preposition.word) ...")
+                            message("I don't know how to throw \(selector!.prepositionalPhrase!.preposition!.word) ...")
                     }
                 } else { // there is not a prepositional phrase
                     message("no target specified")
                 }
             case "go":
                 if selector == nil && prepositionalPhrase != nil { // just a prepositional phrase
-                    switch prepositionalPhrase!.preposition.word {
+                    switch prepositionalPhrase!.preposition!.word {
                         case "up", "down", "north", "south", "east", "west":
-                            self.go(to: prepositionalPhrase!.preposition)
+                            self.go(to: prepositionalPhrase!.preposition!)
                         case "to":
                             message("please specify a direction")
                         default:
