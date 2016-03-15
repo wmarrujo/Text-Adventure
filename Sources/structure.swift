@@ -2,6 +2,12 @@ class PhrasalCategory: Hashable {
     var hashValue: Int { // To conform with Hashable
         return unsafeAddressOf(self).hashValue
     }
+    
+    var categoryType: String
+    
+    init() {
+        self.categoryType = ""
+    }
 }
 
 func ==(lhs: PhrasalCategory, rhs: PhrasalCategory) -> Bool {
@@ -13,6 +19,7 @@ class LexicalCategory: PhrasalCategory {
     
     init(_ word: String) {
         self.word = word
+        super.init()
     }
 }
 
@@ -21,31 +28,52 @@ class LexicalCategory: PhrasalCategory {
 ////////////////////////////////////////////////////////////////
 
 class Verb: LexicalCategory { // Performs Specific Action
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "V"
+    }
 }
 
 class Noun: LexicalCategory { // Refers to Items
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "N"
+    }
 }
 
 class Adjective: LexicalCategory { // An Item Filter by Attribute
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "A"
+    }
 }
 
 class Adverb: LexicalCategory { // An Action Modifier (argument)
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "B"
+    }
 }
 
 class Preposition: LexicalCategory { // An Item Filter by Relation
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "P"
+    }
 }
 
 class Conjunction: LexicalCategory { // A Constructor for Compound Clauses
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "C"
+    }
 }
 
 class Determiner: LexicalCategory { // Specifies by Quantity or a Default // TODO: not sure on this one
-    
+    override init(_ word: String) {
+        super.init(word)
+        self.categoryType = "D"
+    }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -54,7 +82,7 @@ class Determiner: LexicalCategory { // Specifies by Quantity or a Default // TOD
 
 class NounPhrase: PhrasalCategory { // Selects Items
     let determiner: Determiner?
-    let adjectives: Set<Adjective>?
+    let adjective: Adjective?
     let noun: Noun?
     let prepositionalPhrase: PrepositionalPhrase?
     
@@ -65,9 +93,9 @@ class NounPhrase: PhrasalCategory { // Selects Items
     let conjunctiveState: Bool
     
     // INITIALIZERS
-    init(withDeterminer determiner: Determiner? = nil, withAdjectives adjectives: Set<Adjective> = [], withNoun noun: Noun, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil) {
+    init(withDeterminer determiner: Determiner? = nil, withAdjective adjective: Adjective? = nil, withNoun noun: Noun, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil) {
         self.determiner = determiner
-        self.adjectives = adjectives
+        self.adjective = adjective
         self.noun = noun
         self.prepositionalPhrase = prepositionalPhrase
         self.conjunctiveState = false
@@ -75,6 +103,9 @@ class NounPhrase: PhrasalCategory { // Selects Items
         self.firstNounPhrase = nil
         self.conjunction = nil
         self.secondNounPhrase = nil
+        
+        super.init()
+        self.categoryType = "NP"
     }
     
     init(withNounPhrase firstNounPhrase: NounPhrase, conjunction: Conjunction, andSecondNounPhrase secondNounPhrase: NounPhrase) {
@@ -84,15 +115,18 @@ class NounPhrase: PhrasalCategory { // Selects Items
         self.conjunctiveState = true
         
         self.determiner = nil
-        self.adjectives = nil
+        self.adjective = nil
         self.noun = nil
         self.prepositionalPhrase = nil
+        
+        super.init()
+        self.categoryType = "NP"
     }
     
     // METHODS
     func nounPhraseByRemovingPrepositionalPhrase() -> NounPhrase {
         if self.conjunctiveState {
-            return NounPhrase(withDeterminer: self.determiner, withAdjectives: self.adjectives!, withNoun: self.noun!)
+            return NounPhrase(withDeterminer: self.determiner, withAdjective: self.adjective!, withNoun: self.noun!)
         } else {
             return self
         }
@@ -116,6 +150,9 @@ class PrepositionalPhrase: PhrasalCategory { // Filters Items
         self.firstPrepositionalPhrase = nil
         self.conjunction = nil
         self.secondPrepositionalPhrase = nil
+        
+        super.init()
+        self.categoryType = "PP"
     }
     
     init(withPrepositionalPhrase firstPrepositionalPhrase: PrepositionalPhrase, conjunction: Conjunction, andSecondPrepositionalPhrase secondPrepositionalPhrase: PrepositionalPhrase) {
@@ -126,6 +163,9 @@ class PrepositionalPhrase: PhrasalCategory { // Filters Items
         
         self.preposition = nil
         self.nounPhrase = nil
+        
+        super.init()
+        self.categoryType = "PP"
     }
     
     // METHODS
@@ -152,6 +192,9 @@ class VerbPhrase: PhrasalCategory { // Performs Action
         self.firstVerbPhrase = nil
         self.conjunction = nil
         self.secondVerbPhrase = nil
+        
+        super.init()
+        self.categoryType = "VP"
     }
     
     init(withVerbPhrase firstVerbPhrase: VerbPhrase, conjunction: Conjunction, andSecondVerbPhrase secondVerbPhrase: VerbPhrase) {
@@ -164,6 +207,9 @@ class VerbPhrase: PhrasalCategory { // Performs Action
         self.nounPhrase = nil
         self.prepositionalPhrase = nil
         self.adverb = nil
+        
+        super.init()
+        self.categoryType = "VP"
     }
     
     // METHODS

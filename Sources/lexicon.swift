@@ -147,6 +147,8 @@ let lexicon: [String: Set<LexicalCategory>] = [
     "but":[Conjunction("but")],
     "then":[Conjunction("then")],
     
+    "everything":[Noun("everything")],
+    
     // and some things (nouns) for testing ---------------------
     
     "inventory":[Noun("inventory")],
