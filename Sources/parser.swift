@@ -1,95 +1,26 @@
-func parse(string: String) {
+func parse(string: String, player: Player) {
     
     // TOKENIZING
     let words = string.lowercaseString.stringByTrimmingCharactersInSet(whitespace).componentsSeparatedByCharactersInSet(whitespace)
-    dump(words)
-    print("\n\n")
     
     // DICTIONARY LOOKUP
     let tokens: [Set<PhrasalCategory>] = words.map({ lexicon[$0]! }) // FIXME: account for this
-    dump(tokens)
-    print("\n\n")
     
     // PARSING
     let phrase = construct(tokens)
-    print("phrase: \(phrase)")
     
-    //let syntaxTree = construct(tokens)
+    if !(phrase is VerbPhrase) {
+        message("please enter a command")
+    }
     
-    // BINDING
-    
-    
-    // DISPATCHING
-    
+    let command = phrase as! VerbPhrase
     
     // EXECUTING
     
-    
+    command.perform(player)
 }
 
-func construct(tokens: [Set<PhrasalCategory>]) -> Set<PhrasalCategory> {
-    /*
-    
-    // ---------------- PARSE EACH SECTION INCREASING FROM THE RIGHT AND FROM AN INDEX FROM THE RIGHT
-    var sentence = tokens
-    var index = sentence.endIndex // the right edge of the range (1 more than the index that will be called)
-    var length = 1 // the length of the range
-    
-    repeat {
-        // ---------------- SETUP
-        
-        var newReplacement: Set<PhrasalCategory> = []
-        var replacement: Set<PhrasalCategory> = []
-        
-        // ---------------- GO THROUGH EACH SECTION LEFT OF THE INDEX
-        
-        repeat {
-            
-            let section = sentence[(index - length)..<index] // FIXME: won't work inline
-            print("testing section at (index: \(index), length:\(length)): \(section)")
-            newReplacement = applyRules(Array(section)) // test the next length of section
-            
-            if !newReplacement.isEmpty { // for 1 word case where it will terminate due to (index - length) >= 0
-                print("valid")
-                replacement = newReplacement
-            } else {
-                print("invalid")
-            }
-            
-            length += 1 // test 1 further to the left next time
-        } while (index - length) >= 0 && !newReplacement.isEmpty // exit when the length of the range is longer than the beginning of the list to the index or when newReplacement becomes empty
-        length -= 1 // undo the last modification to the left because the condition failed, we're using the last value
-        if newReplacement.isEmpty { // if it exited the loop due to not matching something, not range overflow
-            length -= 1 // shorten 1 extra
-        }
-        print("last valid section: \(sentence[(index - length)..<index])")
-        
-        // ---------------- DECIDE WHAT TO DO BASED ON THE FINAL REPLACEMENT(S) SELECTED
-        
-        if replacement.isEmpty || replacement.count == 1 { // no rule was matched, probably already a phrase
-            index -= 1 // begin testing range from 1 further left now
-        } else { // a rule was matched
-            let range: Range<Int> = (index - length)..<index // FIXME: won't work inline
-            sentence.replaceRange(range, with: [replacement]) // do the replacement
-            print("sentence from replacing at (index: \(index), length:\(length)): \(sentence)")
-            index = sentence.endIndex // "carriage return" to right (test from very end again with new replacements in place)
-            length = 2 // start matching with a length of 2
-        }
-        
-    } while index > 1 // while the index has not reached the end
-    
-    */
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+func construct(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
     var sentence = tokens
     
     // ---------------- PARSE
@@ -125,14 +56,14 @@ func construct(tokens: [Set<PhrasalCategory>]) -> Set<PhrasalCategory> {
     
     // ---------------- MAKE SURE THE SENTENCE WAS PARSED FULLY
     
-    if sentence.count > 1 { // not enough was matched, they have bad grammar
-        message("the grammar you used could not be matched to any of our grammar rules")
-        return [] // abort
+    if sentence.count != 1 { // not enough or too many were matched, they have bad grammar
+        message("the grammar you used could not be matched to any of our grammar rules or your usage is ambiguous")
+        return Noun("error") // abort
     }
     
     // ---------------- RETURN THE PARSED PHRASE
     
-    return sentence[0]
+    return sentence[0].first!
 }
 
 func applyRules(tokens: [Set<PhrasalCategory>]) -> Set<PhrasalCategory> { // applies grammar rules to a set of tokens and returns all possible grammar constructions (phrases)
@@ -147,8 +78,11 @@ func applyRules(tokens: [Set<PhrasalCategory>]) -> Set<PhrasalCategory> { // app
     return possibleCompoundPhrases
 }
 
+// TODO: make proper error handling, quite unsafe for the moment, and not very good user replies for errors
 
 /*
+Some Tests
+
 DROP THE BIGGEST OF THE LIT STICKS IN THE BOAT THEN DROP THE LEAST BEST WEAPON IN THE RIVER
 THROW KNIFE AT MARY
 THROW KNIFE TO MARY

@@ -1,5 +1,15 @@
 import CoreFoundation
 
+
+////////////////////////////////////////////////////////////////
+// TESTS
+///////////////////////////////////////////////////////////////
+
+var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeight: 5, withAttributes: ["sturdy", "old"])
+var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])
+var player = Player(named: "Jeff", withDescription: "you", withHealth: 100, atLocation: initialLocation, withEncumbrence: 12) // and no default inventory
+
+
 // Utility Functions
 
 ////////////////////////////////////////////////////////////////
@@ -15,11 +25,6 @@ let args = Process.arguments
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
-parse(prompt("> "))
-
-////////////////////////////////////////////////////////////////
-// TESTS
-///////////////////////////////////////////////////////////////
-
-var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeight: 5, withAttributes: ["sturdy", "old"])
-var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])
+while player.playing {
+    player.input()
+}

@@ -13,7 +13,7 @@ public class Creature: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
 
-    init(named name: String, andDescription description: String = "", withHealth health: Int, atLocation location: Location, withEncumbrence encumbrance: Int, withInventoryOf inventory: Set<Item> = []) {
+    init(named name: String, withDescription description: String = "", withHealth health: Int, atLocation location: Location, withEncumbrence encumbrance: Int, withInventoryOf inventory: Set<Item> = []) {
         self.health = health
         self.location = location
         self.encumbrance = encumbrance

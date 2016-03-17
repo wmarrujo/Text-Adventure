@@ -190,7 +190,7 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
     // METHODS
 }
 
-class CompoundPrepositionalPhrase: PhrasalCategory {
+class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
     let firstPrepositionalPhrase: PrepositionalPhrase
     let conjunction: Conjunction
     let secondPrepositionalPhrase: PrepositionalPhrase
@@ -210,7 +210,7 @@ class CompoundPrepositionalPhrase: PhrasalCategory {
 }
 
 protocol VerbPhrase {
-    func perform()
+    func perform(player: Player)
 }
 
 class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
@@ -235,8 +235,8 @@ class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
     }
     
     // METHODS
-    func perform() {
-        // Player.perform(nounPhrase, etc.)
+    func perform(player: Player) {
+        player.perform(self)
     }
 }
 
@@ -259,10 +259,10 @@ class CompoundVerbPhrase: PhrasalCategory {
     }
     
     // METHODS
-    func perform() {
+    func perform(player: Player) {
         // TODO: maybe check for type of conjunction for "and" not "or" or something
-        self.firstVerbPhrase.perform()
-        self.secondVerbPhrase.perform()
+        self.firstVerbPhrase.perform(player)
+        self.secondVerbPhrase.perform(player)
     }
 }
 

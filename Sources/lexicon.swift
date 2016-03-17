@@ -5,7 +5,7 @@ let lexicon: [String: Set<LexicalCategory>] = [
     //"read":[Verb],
     //"save":[Verb],
     //"restore":[Verb],
-    //"quit":[Verb],
+    "quit":[Verb("quit")],
     //"restart":[Verb],
     "take":[Verb("take")],
     "get":[Verb("take")],

@@ -4,7 +4,7 @@ public class Player: Creature {
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
     
-    
+    var playing: Bool = true // to quit game loop // always starts as true when created (obviously)
     
     ////////////////////////////////////////////////////////////////
     // INITIALIZATION
@@ -24,68 +24,32 @@ public class Player: Creature {
     
     // INTERACTIONS
     
-    func perform(command: String, selector: NounPhrase?, prepositionalPhrase: PrepositionalPhrase?, modifier: Adverb?) {
-        /*switch command {
-            case "take":
-                if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // has a prepositional phrase and the prepositional phrase has a noun phrase
-                    switch selector!.prepositionalPhrase!.preposition!.word {
-                        case "from":
-                            self.take(selector!.nounPhraseByRemovingPrepositionalPhrase(), from: nounPhrase, modifier: modifier)
-                        default:
-                            message("I don't know how to take \(selector!.prepositionalPhrase!.preposition!.word) ...")
-                    }
-                } else if let nounPhrase = selector { // take [NP] // there is not a prepositional phrase
-                    self.take(nounPhrase, modifier: modifier)
-                } else { // take _ // there is only the verb
-                    message("take what?")
-                }
-            case "give":
-                if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // there is a prepositional phrase
-                    switch selector!.prepositionalPhrase!.preposition!.word {
-                        case "to": // give [NP] to [NP]
-                            self.give(selector!, to: nounPhrase, modifier: modifier)
-                        default:
-                            message("I don't know how to give \(selector!.prepositionalPhrase!.preposition!.word) ...")
-                    }
-                } else { // there is not a prepositional phrase
-                    message("no target specified")
-                }
-            case "drop":
-                if let nounPhrase = selector {
-                    self.drop(nounPhrase, modifier: modifier)
-                }
-            case "throw":
-                if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // there is a prepositional phrase
-                    switch selector!.prepositionalPhrase!.preposition!.word {
-                        case "at":
-                            self.`throw`(selector!.nounPhraseByRemovingPrepositionalPhrase(), at: nounPhrase, modifier: modifier)
-                        case "to":
-                            self.give(selector!.nounPhraseByRemovingPrepositionalPhrase(), to: nounPhrase, modifier: modifier)
-                        default:
-                            message("I don't know how to throw \(selector!.prepositionalPhrase!.preposition!.word) ...")
-                    }
-                } else { // there is not a prepositional phrase
-                    message("no target specified")
+    func input() {
+        parse(prompt("> "), player: self) // global prompt
+    }
+    
+    func perform(command: RegularVerbPhrase) {
+        switch command.verb.word {
+            case "quit":
+                if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
+                    quitGame()
+                } else {
+                    message("quit failed")
                 }
             case "go":
-                if selector == nil && prepositionalPhrase != nil { // just a prepositional phrase
-                    switch prepositionalPhrase!.preposition!.word {
-                        case "up", "down", "north", "south", "east", "west":
-                            self.go(to: prepositionalPhrase!.preposition!)
-                        case "to":
-                            message("please specify a direction")
-                        default:
-                            message("where is that")
-                    }
-                } else {
-                    message("no direction specified or too many arguments")
-                }
+                self.go(command.prepositionalPhrase)
             default:
-                message("I don't know how to do \(command)")
-        }*/
+                message("unknown command given") // then the developer forgot to implement from the lexicon
+        }
     }
     
     // ACTIONS
+    
+    func quitGame() {
+        // TODO: make a quit sequence
+        message("goodbye")
+        self.playing = false
+    }
     
     func take(selector: NounPhrase, modifier: Adverb?) { // transfer an item from the location to your inventory
         // selector guaranteed not to have a prepositional phrase
@@ -108,8 +72,31 @@ public class Player: Creature {
         message("threw \(selector) at \(target) \(modifier)")
     }
     
-    func go(to direction: Preposition) { // move from this location to another through a portal
-        message("went \(direction)")
+    func go(direction: PrepositionalPhrase?) { // move from this location to another through a portal
+        if direction == nil {
+            message("please specify a direction")
+            return // abort
+        }
+        
+        if let dir = direction as? RegularPrepositionalPhrase {
+            switch dir.preposition.word {
+                case "up", "down", "north", "south", "east", "west", "in":
+                    message("you went \(dir.preposition.word)")
+                default:
+                    message("your direction was not understood")
+            }
+        } else if let dir = direction as? CompoundPrepositionalPhrase { // direction is CompoundPrepositionalPhrase
+            switch dir.conjunction.word {
+                case "and":
+                    message("you can't move two ways at once!")
+                case "then":
+                    self.go(dir.firstPrepositionalPhrase)
+                    message("then")
+                    self.go(dir.secondPrepositionalPhrase)
+                default:
+                    message("I do not understand that conjunction in this context")
+            }
+        }
     }
     
 }
