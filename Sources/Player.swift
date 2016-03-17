@@ -25,7 +25,7 @@ public class Player: Creature {
     // INTERACTIONS
     
     func perform(command: String, selector: NounPhrase?, prepositionalPhrase: PrepositionalPhrase?, modifier: Adverb?) {
-        switch command {
+        /*switch command {
             case "take":
                 if let nounPhrase = selector?.prepositionalPhrase?.nounPhrase { // has a prepositional phrase and the prepositional phrase has a noun phrase
                     switch selector!.prepositionalPhrase!.preposition!.word {
@@ -82,7 +82,7 @@ public class Player: Creature {
                 }
             default:
                 message("I don't know how to do \(command)")
-        }
+        }*/
     }
     
     // ACTIONS
