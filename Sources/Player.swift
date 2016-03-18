@@ -25,7 +25,35 @@ public class Player: Creature {
     // INTERACTIONS
     
     func input() {
-        parse(prompt("> "), player: self) // global prompt
+        do {
+            
+            let command = try parse(prompt("> "), player: self) // global prompt
+            command.perform(self)
+            
+        } catch SyntaxError.NoMatchesInLexicon(let word) {
+            self.output("I do not know what you mean by \"\(word)\". Perhaps you misspelled the word?")
+            // TODO: maybe do some searching for words that are close?
+        } catch GrammarError.TooManyTokensLeft(let tokens) {
+            self.output("cannot infer what you mean by \(tokens)")
+            // FIXME: going to give an ugly output
+            // FIXME: but probably the most important one to give good feedback on
+            // FIXME: where the user needs better grammar
+            // use intercalate function
+        } catch GrammarError.NoTokensInSentence {
+            self.output("\(self.name) simply stood there. silent.")
+        } catch GrammarError.MultipleBuildsPossible(let sentence) {
+            self.output("did you mean to say: TODO: this or that ... for possibilities of sentence") // \(intercalate(sentence.map({ $0.phrasalOutput }), " or "))")
+            // TODO: implement intercalate
+        } catch SemanticsError.NotACommand(let phrase) {
+            self.output("please enter a command. \"\(phrase.phrasalOutput)\" phrase is not a command")
+        } catch { // catch-all
+            self.output("something went wrong in parsing your input, please try again")
+        }
+    }
+    
+    func output(text: String) {
+        // NOTE: keep any output to the player going through this function
+        message(text)
     }
     
     func perform(command: RegularVerbPhrase) {

@@ -9,3 +9,8 @@ func zipToDict<S0 : SequenceType, S1 : SequenceType where S0.Generator.Element :
         }
         return dict
 }
+
+/*
+func intercalate<S: SequenceType, A: Any where S.Generator.Element == A>(sequence: S, delimiter: A) {
+    // TODO: implement later
+}*/

@@ -1,26 +1,30 @@
-func parse(string: String, player: Player) {
+func parse(string: String, player: Player) throws -> VerbPhrase{
     
     // TOKENIZING
     let words = string.lowercaseString.stringByTrimmingCharactersInSet(whitespace).componentsSeparatedByCharactersInSet(whitespace)
     
     // DICTIONARY LOOKUP
-    let tokens: [Set<PhrasalCategory>] = words.map({ lexicon[$0]! }) // FIXME: account for this
+    let tokens: [Set<PhrasalCategory>] = try words.map({
+        (word: String) throws -> Set<PhrasalCategory> in
+        
+        guard let token = lexicon[word] else {
+            throw SyntaxError.NoMatchesInLexicon(word: word)
+        }
+        
+        return token
+    }) // FIXME: account for this
     
     // PARSING
-    let phrase = construct(tokens)
+    let phrase = try construct(tokens)
     
-    if !(phrase is VerbPhrase) {
-        message("please enter a command")
+    guard let command = phrase as? VerbPhrase else {
+        throw SemanticsError.NotACommand(phrase: phrase)
     }
     
-    let command = phrase as! VerbPhrase
-    
-    // EXECUTING
-    
-    command.perform(player)
+    return command
 }
 
-func construct(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
+func construct(tokens: [Set<PhrasalCategory>]) throws -> PhrasalCategory {
     var sentence = tokens
     
     // ---------------- PARSE
@@ -34,7 +38,7 @@ func construct(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
         length = index // start with the full section left of the index
         var replacement: (Range<Int>, with: [Set<PhrasalCategory>]) = ((index - length)..<index, with: [])
         repeat {
-            let newReplacement = applyRules(Array(sentence[(index - length)..<index]))
+            let newReplacement = try applyRules(Array(sentence[(index - length)..<index]))
             if newReplacement.isEmpty {
                 length -= 1 // test the next one
             } else {
@@ -47,18 +51,21 @@ func construct(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
         if replacement.with.isEmpty {
             index -= 1 // start 1 farther left
         } else {
-            // FIXME: sentence.replaceRange(replacement) // won't work
-            sentence.replaceRange(replacement.0, with: replacement.with)
+            sentence.replaceRange(replacement.0, with: replacement.with) // group the stuff in the range as a phrasal group (identify it as a phrase)
             index = sentence.endIndex // start over with this new sentence
         }
         
     } while index > 0 // end when the last index is at the very end, either because it's the last one and found the last match or because it couldn't find any more matches
     
-    // ---------------- MAKE SURE THE SENTENCE WAS PARSED FULLY
+    // ---------------- MAKE SURE THE SENTENCE WAS PARSED CORRECTLY
     
-    if sentence.count != 1 { // not enough or too many were matched, they have bad grammar
-        message("the grammar you used could not be matched to any of our grammar rules or your usage is ambiguous")
-        return Noun("error") // abort
+    if sentence.count > 1 { // not enough
+        throw GrammarError.TooManyTokensLeft(tokens: sentence)
+    } else if sentence.count < 1 { // nothing was inputted?
+        throw GrammarError.NoTokensInSentence
+    } else if sentence[0].count != 1 {
+        throw GrammarError.MultipleBuildsPossible(sentence: sentence[0])
+        // TODO: check to see if there is only 1 with a verb phrase, and choose that one
     }
     
     // ---------------- RETURN THE PARSED PHRASE
@@ -66,19 +73,34 @@ func construct(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
     return sentence[0].first!
 }
 
-func applyRules(tokens: [Set<PhrasalCategory>]) -> Set<PhrasalCategory> { // applies grammar rules to a set of tokens and returns all possible grammar constructions (phrases)
+func applyRules(tokens: [Set<PhrasalCategory>]) throws -> Set<PhrasalCategory> { // applies grammar rules to a set of tokens and returns all possible grammar constructions (phrases)
     var possibleCompoundPhrases: Set<PhrasalCategory> = []
     
     for rule in grammar {
         if rule.matches(tokens) {
-            possibleCompoundPhrases.insert(rule.buildPhrase(tokens))
+            possibleCompoundPhrases.insert(try rule.buildPhrase(tokens))
         }
     }
     
     return possibleCompoundPhrases
 }
 
-// TODO: make proper error handling, quite unsafe for the moment, and not very good user replies for errors
+// ERROR HANDLING
+
+enum SyntaxError: ErrorType {
+    case NoMatchesInLexicon(word: String) // Misspelled?
+}
+
+enum GrammarError: ErrorType {
+    case FailedInBuildingPhrase(phrase: [Set<PhrasalCategory>]) // should never appear, because we're checking for that in applyRules with rule.matches()
+    case TooManyTokensLeft(tokens: [Set<PhrasalCategory>]) // failed at finding any applicable grammar rules and stopped parsing
+    case NoTokensInSentence // probably nothing was inputted (or maybe a grammar rule returned an empty set, though that's not possible)
+    case MultipleBuildsPossible(sentence: Set<PhrasalCategory>) // the possible sentences it found were not empty and it doesn't know which one to choose
+}
+
+enum SemanticsError: ErrorType {
+    case NotACommand(phrase: PhrasalCategory) // cannot be converted to VerbPhrase
+}
 
 /*
 Some Tests

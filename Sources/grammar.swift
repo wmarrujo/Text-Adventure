@@ -39,11 +39,11 @@ struct Rule {
         return false
     }
     
-    func buildPhrase(tokens: [Set<PhrasalCategory>]) -> PhrasalCategory {
+    func buildPhrase(tokens: [Set<PhrasalCategory>]) throws -> PhrasalCategory {
         // PREPARE TOKENS TO BE ARGUMENTS TO THE CONSTRUCTOR
         
         let tokenPhrasesArguments = Array(Zip2Sequence(self.components, tokens))
-        let argumentArray = tokenPhrasesArguments.map({
+        let argumentArray = try tokenPhrasesArguments.map({
             (phrasalCategory: String, tokenPhrases: Set<PhrasalCategory>) -> PhrasalCategory in // apply to each token
             
             for tokenPhrase in tokenPhrases { // test each phrasal category possibility for the given token
@@ -51,7 +51,9 @@ struct Rule {
                     return tokenPhrase // select this phrasalCagegory
                 }
             }
-            return Noun("error") // make an error not this
+            
+            // if it hasn't returned yet
+            throw GrammarError.FailedInBuildingPhrase(phrase: tokens)
         })
         
         // APPLY ARGUMENTS TO CONSTRUCTOR
