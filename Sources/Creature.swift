@@ -3,7 +3,7 @@ public class Creature: Thing {
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
-    
+
     var health: Int
     var location: Location
     var encumbrance: Int
@@ -19,14 +19,16 @@ public class Creature: Thing {
         self.encumbrance = encumbrance
         self.inventory = inventory
         super.init(name, description)
+        location.enter(self)
     }
+
 
     ////////////////////////////////////////////////////////////////
     // METHODS
     ////////////////////////////////////////////////////////////////
-    
+
     func move(direction: String) {
         self.location.go(direction, by: self)
     }
-    
+
 }

@@ -1,12 +1,12 @@
 public class Thing: Equatable, Hashable {
-    
+
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
-    
+
     var name: String // more of an "identifier" than a "name" really
     var description: String // what gets printed out
-    
+
     public var hashValue: Int { // To conform with Hashable
         return unsafeAddressOf(self).hashValue
     }
@@ -14,20 +14,20 @@ public class Thing: Equatable, Hashable {
     ////////////////////////////////////////////////////////////////
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
-    
+
     init(_ name: String, _ description: String = "") {
         self.name = name
         self.description = description
     }
-    
+
     ////////////////////////////////////////////////////////////////
     // METHODS
     ////////////////////////////////////////////////////////////////
-    
+
     func showDescription() -> String {
-        return description
+        return self.description
     }
-    
+
 }
 
 ////////////////////////////////////////////////////////////////
