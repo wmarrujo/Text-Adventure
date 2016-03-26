@@ -40,13 +40,13 @@ public class Location: Thing {
         if !self.contents.isEmpty {
             description += "\n You see around you:"
             for item in self.contents {
-                description += "\n\t" + item.showDescription()
+                description += "\n\t" + item.description
             }
         }
         if !self.creature.isEmpty {
             description += "\n here with you is:"
             for creature in self.creature {
-                description += "\n\t" + creature.showDescription()
+                description += "\n\t" + creature.description
             }
         }
         return description

@@ -78,6 +78,12 @@ public class Player: Creature {
                 }
             case "go":
                 self.go(command.prepositionalPhrase)
+            case "look":
+                if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
+                    self.look()
+                } else {
+                    message("You're looking too complicatedly!")
+                }
             default:
                 message("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
         }
@@ -110,6 +116,10 @@ public class Player: Creature {
     
     func `throw`(selector: NounPhrase, at target: NounPhrase, modifier: Adverb?) { // transfer object to location and do damage to target
         message("threw \(selector) at \(target) \(modifier)")
+    }
+    
+    func look() {
+        message(self.location.description)
     }
     
     func go(direction: PrepositionalPhrase?) { // move from this location to another through a portal

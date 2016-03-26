@@ -25,7 +25,6 @@ let args = Process.arguments
 // GAME LOOP
 ////////////////////////////////////////////////////////////////
 
-//print(["asdf", "asj", "word"].joinWithSeparator("   "))
 
 while player.playing {
     player.input()
