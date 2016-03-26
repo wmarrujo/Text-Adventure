@@ -34,7 +34,7 @@ class LexicalCategory: PhrasalCategory {
     }
     
     override var description: String {
-        return "generic lexical category: " + self.word
+        return "Generic Lexical Category: " + self.word
     }
     
     init(_ word: String) {
@@ -143,18 +143,18 @@ class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
+        var phrasalOutput: [String] = []
         if let determiner = self.determiner?.phrasalOutput {
-            phrasalOutput += " " + determiner
+            phrasalOutput += [determiner]
         }
         if let adjective = self.adjective?.phrasalOutput {
-            phrasalOutput += " " + adjective
+            phrasalOutput += [adjective]
         }
-        phrasalOutput += " " + self.noun.phrasalOutput
+        phrasalOutput += [self.noun.phrasalOutput]
         if let prepositionalPhrase = self.prepositionalPhrase?.phrasalOutput {
-            phrasalOutput += " [" + prepositionalPhrase + "]"
+            phrasalOutput += ["[" + prepositionalPhrase + "]"]
         }
-        return phrasalOutput
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     // INITIALIZERS
@@ -184,11 +184,11 @@ class CompoundNounPhrase: PhrasalCategory, NounPhrase {
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " [" + self.firstNounPhrase.phrasalOutput + "]"
-        phrasalOutput += " " + self.conjunction.phrasalOutput
-        phrasalOutput += " [" + self.secondNounPhrase.phrasalOutput + "]"
-        return phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += ["[" + self.firstNounPhrase.phrasalOutput + "]"]
+        phrasalOutput += [self.conjunction.phrasalOutput]
+        phrasalOutput += ["[" + self.secondNounPhrase.phrasalOutput + "]"]
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     init(withNounPhrase firstNounPhrase: NounPhrase, conjunction: Conjunction, andNounPhrase secondNounPhrase: NounPhrase) {
@@ -214,12 +214,12 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " " + self.preposition.phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += [self.preposition.phrasalOutput]
         if let nounPhrase = self.nounPhrase?.phrasalOutput {
-            phrasalOutput += " [" + nounPhrase + "]"
+            phrasalOutput += ["[" + nounPhrase + "]"]
         }
-        return phrasalOutput
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     // INITIALIZERS
@@ -244,11 +244,11 @@ class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " [" + self.firstPrepositionalPhrase.phrasalOutput + "]"
-        phrasalOutput += " " + self.conjunction.phrasalOutput
-        phrasalOutput += " [" + self.secondPrepositionalPhrase.phrasalOutput + "]"
-        return phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += [" [" + self.firstPrepositionalPhrase.phrasalOutput + "]"]
+        phrasalOutput += [self.conjunction.phrasalOutput]
+        phrasalOutput += ["[" + self.secondPrepositionalPhrase.phrasalOutput + "]"]
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     init(withPrepositionalPhrase firstPrepositionalPhrase: PrepositionalPhrase, conjunction: Conjunction, andPrepositionalPhrase secondPrepositionalPhrase: PrepositionalPhrase) {
@@ -276,18 +276,18 @@ class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " " + self.verb.phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += [self.verb.phrasalOutput]
         if let nounPhrase = self.nounPhrase?.phrasalOutput {
-            phrasalOutput += " [" + nounPhrase + "]"
+            phrasalOutput += ["[" + nounPhrase + "]"]
         }
         if let prepositionalPhrase = self.prepositionalPhrase?.phrasalOutput {
-            phrasalOutput += " [" + prepositionalPhrase + "]"
+            phrasalOutput += ["[" + prepositionalPhrase + "]"]
         }
         if let adverb = self.adverb?.phrasalOutput {
-            phrasalOutput += " " + adverb
+            phrasalOutput += [adverb]
         }
-        return phrasalOutput
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     // INITIALIZERS
@@ -317,11 +317,11 @@ class CompoundVerbPhrase: PhrasalCategory {
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " [" + self.firstVerbPhrase.phrasalOutput + "]"
-        phrasalOutput += " " + self.conjunction.phrasalOutput
-        phrasalOutput += " [" + self.secondVerbPhrase.phrasalOutput + "]"
-        return phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += ["[" + self.firstVerbPhrase.phrasalOutput + "]"]
+        phrasalOutput += [self.conjunction.phrasalOutput]
+        phrasalOutput += ["[" + self.secondVerbPhrase.phrasalOutput + "]"]
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     init(withVerbPhrase firstVerbPhrase: VerbPhrase, conjunction: Conjunction, andVerbPhrase secondVerbPhrase: VerbPhrase) {
@@ -352,14 +352,13 @@ class CompoundAdjective: Adjective {
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " " + self.firstAdjective.phrasalOutput
-        phrasalOutput += " " + self.secondAdjective.phrasalOutput
-        return phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += [self.firstAdjective.phrasalOutput]
+        phrasalOutput += [self.secondAdjective.phrasalOutput]
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     init(withAdjective firstAdjective: Adjective, conjunction: Conjunction, andAdjective secondAdjective: Adjective) {
-        // TODO: handle conjunction here ("and" or "or" or "not" differences and negate second or first accordingly)
         self.firstAdjective = firstAdjective
         self.secondAdjective = secondAdjective
         
@@ -383,10 +382,10 @@ class CompoundAdverb: Adverb {
     }
     
     override var phrasalOutput: String {
-        var phrasalOutput = ""
-        phrasalOutput += " " + self.firstAdverb.phrasalOutput
-        phrasalOutput += " " + self.secondAdverb.phrasalOutput
-        return phrasalOutput
+        var phrasalOutput: [String] = []
+        phrasalOutput += [self.firstAdverb.phrasalOutput]
+        phrasalOutput += [self.secondAdverb.phrasalOutput]
+        return phrasalOutput.joinWithSeparator(" ")
     }
     
     init(withAdverb firstAdverb: Adverb, conjunction: Conjunction, andAdverb secondAdverb: Adverb) {

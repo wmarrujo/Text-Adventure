@@ -25,10 +25,10 @@ public class Location: Thing {
     
     // STATUS
     
-    func findItemsWithRule(rule: (Item) -> Bool) -> Set<Item> {
+    func findItemsWithSelector(selector: (Item) -> Bool) -> Set<Item> {
         var items: Set<Item> = []
         for item in self.contents {
-            if rule(item) { // if item matches rule
+            if selector(item) { // if item matches rule
                 items.insert(item)
             }
         }

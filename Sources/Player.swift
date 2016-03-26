@@ -33,17 +33,29 @@ public class Player: Creature {
         } catch SyntaxError.NoMatchesInLexicon(let word) {
             self.output("I do not know what you mean by \"\(word)\". Perhaps you misspelled the word?")
             // TODO: maybe do some searching for words that are close?
-        } catch GrammarError.TooManyTokensLeft(let tokens) {
-            self.output("cannot infer what you mean by \(tokens)")
-            // FIXME: going to give an ugly output
-            // FIXME: but probably the most important one to give good feedback on
-            // FIXME: where the user needs better grammar
-            // use intercalate function
+        } catch GrammarError.TooManyTokensLeft(let tokens) { // cannot match grammar fully
+            // the
+            func formatTokens(tokens: [Set<PhrasalCategory>]) -> String {
+                let phrases: [String] = tokens.map({ (phrasePossibilities: Set<PhrasalCategory>) -> String in
+                    var possibilities: [String] = []
+                    for item in phrasePossibilities { // phrasalCategories in the set
+                        possibilities += [item.phrasalOutput]
+                    }
+                    return possibilities.joinWithSeparator("/")
+                })
+                return phrases.joinWithSeparator(" | ")
+            }
+            
+            self.output("cannot infer what you mean by \"\(formatTokens(tokens))\"")
         } catch GrammarError.NoTokensInSentence {
             self.output("\(self.name) simply stood there. silent.")
-        } catch GrammarError.MultipleBuildsPossible(let sentence) {
-            self.output("did you mean to say: TODO: this or that ... for possibilities of sentence") // \(intercalate(sentence.map({ $0.phrasalOutput }), " or "))")
-            // TODO: implement intercalate
+        } catch GrammarError.MultipleBuildsPossible(let possibilities) { // ambiguous
+            // the resulting set of phrasal categories has too many possibilites in it
+            let builds: [String] = Array(possibilities).map({ (phrase: PhrasalCategory) -> String in
+                phrase.phrasalOutput
+            })
+            
+            self.output("Ambiguous usage of input. Did you mean: \"\(builds.joinWithSeparator("\" or \""))\"")
         } catch SemanticsError.NotACommand(let phrase) {
             self.output("please enter a command. \"\(phrase.phrasalOutput)\" phrase is not a command")
         } catch { // catch-all
@@ -67,7 +79,7 @@ public class Player: Creature {
             case "go":
                 self.go(command.prepositionalPhrase)
             default:
-                message("unknown command given") // then the developer forgot to implement from the lexicon
+                message("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
         }
     }
     

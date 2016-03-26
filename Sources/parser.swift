@@ -64,8 +64,8 @@ func construct(tokens: [Set<PhrasalCategory>]) throws -> PhrasalCategory {
     } else if sentence.count < 1 { // nothing was inputted?
         throw GrammarError.NoTokensInSentence
     } else if sentence[0].count != 1 {
-        throw GrammarError.MultipleBuildsPossible(sentence: sentence[0])
         // TODO: check to see if there is only 1 with a verb phrase, and choose that one
+        throw GrammarError.MultipleBuildsPossible(sentence: sentence[0])
     }
     
     // ---------------- RETURN THE PARSED PHRASE

@@ -1,8 +1,8 @@
-let lexicon: [String: Set<LexicalCategory>] = [
-    //"look":[Verb],
+let lexicon: [String: Set<PhrasalCategory>] = [
+    "look":[Verb("look")],
     //"examine":[Verb],
     //"glance":[Verb],
-    //"read":[Verb],
+    "read":[Verb("read")],
     //"save":[Verb],
     //"restore":[Verb],
     "quit":[Verb("quit")],
@@ -10,12 +10,13 @@ let lexicon: [String: Set<LexicalCategory>] = [
     "take":[Verb("take")],
     "get":[Verb("take")],
     "drop":[Verb("drop")],
-    //"transfer":[Verb],
+    "transfer":[Verb("transfer")],
     "go":[Verb("go")],
-    "move":[Verb("go")],
-    //"open":[Verb, Adjective],
-    //"close":[Verb],
-    //"put":[Verb],
+    "move":[Verb("go"), Verb("transfer")],
+    "open":[Verb("open"), Adjective("open")],
+    "close":[Verb("close")],
+    "insert":[Verb("insert")],
+    "put":[Verb("insert")],
     //"push":[Verb],
     //"pull":[Verb],
     //"turn":[Verb],
@@ -27,14 +28,13 @@ let lexicon: [String: Set<LexicalCategory>] = [
     //"climb":[Verb],
     //"break":[Verb],
     //"burn":[Verb],
-    //"lock":[Verb, Noun],
-    //"unlock":[Verb],
+    "lock":[Verb("lock"), Noun("lock")],
+    "unlock":[Verb("unlock")],
     //"wave":[Verb],
     //"wear":[Verb],
     //"dig":[Verb],
-    //"enter":[Verb],
-    //"exit":[Verb],
-    //"go":[Verb],
+    "enter":[Verb("enter")],
+    "exit":[Verb("exit"), Verb("quit")],
     //"search":[Verb],
     //"jump":[Verb],
     //"say":[Verb],
@@ -105,13 +105,17 @@ let lexicon: [String: Set<LexicalCategory>] = [
     //"short":[Adjective],
     //"only":[Adjective],
     //"strong":[Adjective],
+    //"sturdy":[Adjective],
     //"weak":[Adjective],
     //"dead":[Adjective],
     //"best":[Adjective],
     //"worst":[Adjective],
     //"strongest":[Adjective],
     //"weakest":[Adjective],
+    //"oldest":[Adjective],
+    //"newest":[Adjective],
     //"most":[Adjective],
+    "closed":[Adjective("closed")],
     
     //"not":[Adverb],???
     
@@ -149,6 +153,18 @@ let lexicon: [String: Set<LexicalCategory>] = [
     
     "everything":[Noun("everything")],
     
+    // SIMPLIFICATIONS
+    // already parsed shortened versions of some common commands
+    
+    "n":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("north")))],
+    "s":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("south")))],
+    "e":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("east")))],
+    "w":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("west")))],
+    "u":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("up")))],
+    "d":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("down")))],
+    "i":[RegularVerbPhrase(withVerb: Verb("take"), withNounPhrase: RegularNounPhrase(withNoun: Noun("inventory")))],
+    "l":[RegularVerbPhrase(withVerb: Verb("look"))],
+    
     // and some things (nouns) for testing ---------------------
     
     "inventory":[Noun("inventory")],
@@ -170,4 +186,8 @@ let lexicon: [String: Set<LexicalCategory>] = [
     "longbow":[Noun("longbow")],
     "mary":[Noun("mary")],
     "foe":[Noun("foe")]
+    
+    // some more specfic things for testing edge cases --------
+    
+    
 ]
