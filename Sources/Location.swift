@@ -12,10 +12,10 @@ public class Location: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(named name: String, withDescription description: String = "", withCreature creature: Set<Creature> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil) {
+    init(named name: String, withDescription description: String = "", withCreature creature: Set<Creature> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil, withNorthwestExit northwest: Portal? = nil, withNortheastExit northeast: Portal? = nil, withSouthwestExit southwest: Portal? = nil, withSoutheastExit southeast: Portal? = nil) {
         self.creature = creature
         self.contents = contents
-        self.directions = ["up":up, "down":down, "north":north, "south":south, "east":east, "west":west]
+        self.directions = ["up":up, "down":down, "north":north, "south":south, "east":east, "west":west, "northwest":northwest, "northeast":northeast, "southwest":southwest, "southeast":southeast]
         super.init(name, description)
     }
     
@@ -71,12 +71,15 @@ public class Location: Thing {
         self.creature.insert(creature)
     }
     
+    func exit(creature: Creature) {
+        self.creature.remove(creature)
+    }
+    
     func go(direction: String, by caller: Creature) {
         if let portal = directions[direction]! { // can go that way
-            // TODO: call exit from this location
             portal.traverse(caller, from: self)
         } else { // can't go that way
-            message("you can't go that way")
+            message("you can't go that way!")
         }
     }
     

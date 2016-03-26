@@ -130,8 +130,8 @@ public class Player: Creature {
         
         if let dir = direction as? RegularPrepositionalPhrase {
             switch dir.preposition.word {
-                case "up", "down", "north", "south", "east", "west", "in":
-                    message("you went \(dir.preposition.word)")
+                case "up", "down", "north", "south", "east", "west", "northwest", "northeast", "southwest", "southeast", "in", "out":
+                    self.location.go(dir.preposition.word, by: self)
                 default:
                     message("your direction was not understood")
             }
