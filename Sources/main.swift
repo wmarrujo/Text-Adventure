@@ -35,6 +35,7 @@ let args = Process.arguments
 message("Welcome to the game!")
 message(player.location.description)
 
+
 while player.playing {
     player.input()
 }

@@ -28,7 +28,8 @@ public class Portal: Thing {
         }
         
         caller.location = destination // update caller's location
-        destination.enter(caller) // update location's contained creature
+        previousLocation.exit(caller) // update previous location's contained creatures
+        destination.enter(caller) // update location's contained creatures
     }
     
 }
