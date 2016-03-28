@@ -10,10 +10,9 @@ var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeig
 var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])
 var player = Player(named: "Jeff", withDescription: "you", withHealth: 100, atLocation: initialLocation, withEncumbrence: 12) // and no default inventory
 var secondaryLocation = Location(named: "Hallway", withDescription: "A boring, long hallway.")
-var initialPortal = Portal(named: "Generic Portal", withDescription: "A boring, old portal.", from: initialLocation, to: secondaryLocation)
-var secondaryPortal = Portal(named: "Generic Portal", withDescription: "A boring, old portal.", from: secondaryLocation, to: initialLocation)
-initialLocation.directions["north"] = initialPortal
-secondaryLocation.directions["south"] = secondaryPortal
+var portal = Portal(named: "Generic Portal", withDescription: "A boring, old portal.", from: initialLocation, to: secondaryLocation)
+initialLocation.directions["north"] = portal
+secondaryLocation.directions["south"] = portal
 
 
 // Utility Functions
@@ -32,8 +31,8 @@ let args = Process.arguments
 ////////////////////////////////////////////////////////////////
 
 //print(["asdf", "asj", "word"].joinWithSeparator("   "))
-message("Welcome to the game!")
-message(player.location.description)
+//message("Welcome to the game!")
+//message(player.location.showDescription())
 
 
 while player.playing {

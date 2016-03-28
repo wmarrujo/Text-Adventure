@@ -59,24 +59,48 @@ class Verb: LexicalCategory { // Performs Specific Action
 }
 
 class Noun: LexicalCategory { // Refers to Items
+    // INSTANCE VARIABLES
+    
+    let select: (fromItems: Set<Item>) -> Set<Item>
+    
     override var description: String {
         return "Noun: " + self.word
     }
     
-    override init(_ word: String) {
+    // INITIALIZERS
+    
+    init(_ word: String, applyingSelector selector: (Set<Item>) -> Set<Item>) {
+        self.select = selector
         super.init(word)
         self.categoryType = "N"
     }
+    
+    // METHODS
+    
+    // selector is an instance variable function ^
 }
 
 class Adjective: LexicalCategory { // An Item Filter by Attribute
+    // INSTANCE VARIABLES
+    
+    let filter: (Item) -> Bool
+    
     override var description: String {
         return "Adjective: " + self.word
     }
     
-    override init(_ word: String) {
+    // INITIALIZERS
+    
+    init(_ word: String, applyingFilter filter: (Item) -> Bool) {
+        self.filter = filter
         super.init(word)
         self.categoryType = "A"
+    }
+    
+    // METHODS
+    
+    func applyFilter(toItems items: Set<Item>) -> Set<Item> {
+        return Set<Item>(items.filter(self.filter))
     }
 }
 
@@ -113,14 +137,27 @@ class Conjunction: LexicalCategory { // A Constructor for Compound Clauses
     }
 }
 
-class Determiner: LexicalCategory { // Specifies by Quantity or a Default // TODO: not sure on this one
+class Determiner: LexicalCategory { // Specifies by Quantity or a Default
+    // INSTANCE VARIABLES
+    
+    let restriction: (Set<Item>) throws -> Set<Item>
+    
     override var description: String {
         return "Determiner: " + self.word
     }
     
-    override init(_ word: String) {
+    // INITIALIZERS
+    
+    init(_ word: String, applyingRestriction restriction: (Set<Item>) throws -> Set<Item>) {
+        self.restriction = restriction
         super.init(word)
         self.categoryType = "D"
+    }
+    
+    // METHODS
+    
+    func applyRestriction(toItems items: Set<Item>) throws -> Set<Item> {
+        return try self.restriction(items)
     }
 }
 
@@ -129,7 +166,7 @@ class Determiner: LexicalCategory { // Specifies by Quantity or a Default // TOD
 ////////////////////////////////////////////////////////////////
 
 protocol NounPhrase: OutputsPhrasally {
-    
+    func select(fromItems items: Set<Item>) throws -> Set<Item>
 }
 
 class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
@@ -158,6 +195,7 @@ class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
     }
     
     // INITIALIZERS
+    
     init(withDeterminer determiner: Determiner? = nil, withAdjective adjective: Adjective? = nil, withNoun noun: Noun, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil) {
         self.determiner = determiner
         self.adjective = adjective
@@ -169,8 +207,24 @@ class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
     }
     
     // METHODS
+    
     func regularNounPhraseByRemovingPrepositionalPhrase() -> RegularNounPhrase {
         return RegularNounPhrase(withDeterminer: self.determiner, withAdjective: self.adjective, withNoun: self.noun)
+    }
+    
+    func select(fromItems items: Set<Item>) throws -> Set<Item> {
+        var selection = items
+        if let reference = self.prepositionalPhrase {
+            selection = try reference.changeReference(selection) // filter by reference to another thing // do this first so it checks (in or on or whatever the preposition is) all possible things before beginning to restrict
+        }
+        selection = self.noun.select(fromItems: selection) // filter by objects of this type
+        if let filter = self.adjective {
+            selection = filter.applyFilter(toItems: selection) // filter by attribute
+        }
+        if let restriction = self.determiner {
+            selection = try restriction.applyRestriction(toItems: selection) // filter by quantifier
+        }
+        return selection
     }
 }
 
@@ -199,10 +253,23 @@ class CompoundNounPhrase: PhrasalCategory, NounPhrase {
         super.init()
         self.categoryType = "NP"
     }
+    
+    // METHODS
+    
+    func select(fromItems items: Set<Item>) throws -> Set<Item> {
+        switch self.conjunction.word {
+            case "and":
+                return try self.firstNounPhrase.select(fromItems: items).union(try self.secondNounPhrase.select(fromItems: items))
+            case "but":
+                return try self.firstNounPhrase.select(fromItems: items).subtract(try self.secondNounPhrase.select(fromItems: items))
+            default:
+                throw EvaluationError.UnknownUsage(ofPhrase: self)
+        }
+    }
 }
 
 protocol PrepositionalPhrase: OutputsPhrasally {
-    
+    func changeReference(items: Set<Item>) throws -> Set<Item>
 }
 
 class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filters Items
@@ -232,6 +299,42 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
     }
     
     // METHODS
+    
+    func changeReference(items: Set<Item>) throws -> Set<Item> {
+        var selection = items
+        if let objects = try self.nounPhrase?.select(fromItems: items) {
+            if objects.count > 0 {
+                throw EvaluationError.DeterminerDidNotMatch(determiner: "the", didNotMatch: objects) // could not choose a reference point
+            } else if objects.isEmpty {
+                throw EvaluationError.NoMatches(self.nounPhrase!)
+            }
+            
+            let object: Item = objects.first! // will have exactly 1 item in objects
+            
+            switch self.preposition.word {
+                case "in":
+                    if let container = object as? Container {
+                        selection = container.contents
+                    } else {
+                        throw EvaluationError.NotAContainer(object)
+                    }
+                case "above", "on":
+                    selection = object.placement["above"]!
+                case "below", "under":
+                    selection = object.placement["below"]!
+                case "around":
+                    selection = object.placement["around"]!
+                case "near":
+                    selection = object.placement["above"]!.union(object.placement["below"]!.union(object.placement["around"]!))
+                    
+                default:
+                    throw EvaluationError.UnknownUsage(ofPhrase: self.preposition)
+            }
+        } else { // self.nounPhrase == nil
+            throw EvaluationError.NotEnoughInformation(inPhrase: self)
+        }
+        return selection
+    }
 }
 
 class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
@@ -258,6 +361,13 @@ class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
         
         super.init()
         self.categoryType = "PP"
+    }
+    
+    // METHODS
+    
+    func changeReference(items: Set<Item>) throws -> Set<Item> {
+        // TODO: check for "and", "or", etc.
+        return try self.firstPrepositionalPhrase.changeReference(items).union(try self.secondPrepositionalPhrase.changeReference(items))
     }
 }
 
@@ -344,6 +454,8 @@ class CompoundVerbPhrase: PhrasalCategory {
 // COMPOUND PHRASAL CATEGORIES
 
 class CompoundAdjective: Adjective {
+    // INSTANCE VARIABLES
+    
     let firstAdjective: Adjective
     let secondAdjective: Adjective
     
@@ -358,18 +470,20 @@ class CompoundAdjective: Adjective {
         return phrasalOutput.joinWithSeparator(" ")
     }
     
+    // INITIALIZERS
+    
     init(withAdjective firstAdjective: Adjective, conjunction: Conjunction, andAdjective secondAdjective: Adjective) {
         self.firstAdjective = firstAdjective
         self.secondAdjective = secondAdjective
         
-        super.init(self.firstAdjective.word + " " + self.secondAdjective.word)
+        super.init(self.firstAdjective.word + " " + self.secondAdjective.word, applyingFilter: { firstAdjective.filter($0) && secondAdjective.filter($0) })
     }
     
     init(withAdjective firstAdjective: Adjective, andAdjective secondAdjective: Adjective) {
         self.firstAdjective = firstAdjective
         self.secondAdjective = secondAdjective
         
-        super.init(self.firstAdjective.word + " " + self.secondAdjective.word)
+        super.init(self.firstAdjective.word + " " + self.secondAdjective.word, applyingFilter: { firstAdjective.filter($0) && secondAdjective.filter($0) })
     }
 }
 
@@ -395,4 +509,14 @@ class CompoundAdverb: Adverb {
         
         super.init(self.firstAdverb.word + " " + self.secondAdverb.word)
     }
+}
+
+// ERROR HANDLING
+
+enum EvaluationError: ErrorType {
+    case UnknownUsage(ofPhrase: PhrasalCategory) // Unknown Usage of the phrase
+    case NotEnoughInformation(inPhrase: PhrasalCategory) // Fragment
+    case NotAContainer(Item) // if it tries to access the inside of something that's not a container
+    case DeterminerDidNotMatch(determiner: String, didNotMatch: Set<Item>) // "the" found multiple, "my" found none of yours, etc.
+    case NoMatches(NounPhrase) // no matches for a given NounPhrase
 }

@@ -1,4 +1,8 @@
-let lexicon: [String: Set<PhrasalCategory>] = [
+let aliases: [String:String] = [
+    "pick up":"take",
+]
+
+let lexicon: [String:Set<PhrasalCategory>] = [
     "look":[Verb("look")],
     //"examine":[Verb],
     //"glance":[Verb],
@@ -13,7 +17,7 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     "transfer":[Verb("transfer")],
     "go":[Verb("go")],
     "move":[Verb("go"), Verb("transfer")],
-    "open":[Verb("open"), Adjective("open")],
+    "open":[Verb("open"), Adjective("open", applyingFilter: { $0.attributes.contains("open") })],
     "close":[Verb("close")],
     "insert":[Verb("insert")],
     "put":[Verb("insert")],
@@ -28,7 +32,7 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     //"climb":[Verb],
     //"break":[Verb],
     //"burn":[Verb],
-    "lock":[Verb("lock"), Noun("lock")],
+    //"lock":[Verb("lock"), Noun("lock")],
     "unlock":[Verb("unlock")],
     //"wave":[Verb],
     //"wear":[Verb],
@@ -74,24 +78,24 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     //"set":[Verb],
     //"is":[Verb],
     
-    "red":[Adjective("red")],
-    "green":[Adjective("green")],
-    "blue":[Adjective("blue")],
-    "yellow":[Adjective("yellow")],
-    "orange":[Adjective("orange"), Noun("orange")],
-    "purple":[Adjective("purple")],
-    "violet":[Adjective("purple")],
-    "brown":[Adjective("brown")],
-    "silver":[Adjective("silver"), Noun("silver")],
-    "gold":[Adjective("gold"), Noun("gold")],
-    "golden":[Adjective("gold")],
-    "white":[Adjective("white")],
-    "black":[Adjective("black")],
-    "light":[Adjective("light"), Verb("light")],
-    "dark":[Adjective("dark")],
-    "clear":[Adjective("transparent"), Verb("clear")],
-    "transparent":[Adjective("transparent")],
-    "transluscent":[Adjective("transparent")],
+    "red":[Adjective("red", applyingFilter: { $0.attributes.contains("red") })],
+    "green":[Adjective("green", applyingFilter: { $0.attributes.contains("green") })],
+    "blue":[Adjective("blue", applyingFilter: { $0.attributes.contains("blue") })],
+    "yellow":[Adjective("yellow", applyingFilter: { $0.attributes.contains("yellow") })],
+    "orange":[Adjective("orange", applyingFilter: { $0.attributes.contains("orange") })/*, Noun("orange")*/],
+    "purple":[Adjective("purple", applyingFilter: { $0.attributes.contains("purple") })],
+    "violet":[Adjective("purple", applyingFilter: { $0.attributes.contains("purple") })],
+    "brown":[Adjective("brown", applyingFilter: { $0.attributes.contains("brown") })],
+    "silver":[Adjective("silver", applyingFilter: { $0.attributes.contains("silver") })/*, Noun("silver")*/],
+    "gold":[Adjective("gold", applyingFilter: { $0.attributes.contains("gold") })/*, Noun("gold")*/],
+    "golden":[Adjective("gold", applyingFilter: { $0.attributes.contains("gold") })],
+    "white":[Adjective("white", applyingFilter: { $0.attributes.contains("white") })],
+    "black":[Adjective("black", applyingFilter: { $0.attributes.contains("black") })],
+    "light":[Adjective("light", applyingFilter: { $0.attributes.contains("light") }), Verb("light")],
+    "dark":[Adjective("dark", applyingFilter: { $0.attributes.contains("dark") })],
+    "clear":[Adjective("transparent", applyingFilter: { $0.attributes.contains("transparent") }), Verb("clear")],
+    "transparent":[Adjective("transparent", applyingFilter: { $0.attributes.contains("transparent") })],
+    "transluscent":[Adjective("transparent", applyingFilter: { $0.attributes.contains("transparent") })],
     //"new":[Adjective],
     //"old":[Adjective],
     //"big":[Adjective],
@@ -115,7 +119,7 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     //"oldest":[Adjective],
     //"newest":[Adjective],
     //"most":[Adjective],
-    "closed":[Adjective("closed")],
+    //"closed":[Adjective("closed")],
     
     //"not":[Adverb],???
     
@@ -137,7 +141,7 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     "from":[Preposition("from")],
     //"left":[Preposition],
     //"right":[Preposition],
-    "on":[Preposition("on"), Adverb("on"), Adjective("on")],
+    "on":[Preposition("on"), Adverb("on"), Adjective("on", applyingFilter: { $0.attributes.contains("on") })],
     "of":[Preposition("of")],
     //"about":[Preposition],
     //"around":[Preposition],
@@ -145,17 +149,19 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     //"with":[Preposition],
     //"using":[Preposition],
     
-    "the":[Determiner("the")],
-    "a":[Determiner("a")],
-    "an":[Determiner("an")],
-    "that":[Determiner("that"), Conjunction("that")],
-    "my":[Determiner("my")],
+    "the":[Determiner("the", applyingRestriction: { if $0.count == 1 { return $0 } else { throw EvaluationError.DeterminerDidNotMatch(determiner: "the", didNotMatch: $0) } })],
+    "a":[Determiner("a", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a", didNotMatch: $0) } else { return [$0.first!] } })],
+    "an":[Determiner("an", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a", didNotMatch: $0) } else { return [$0.first!] } })],
+    //"that":[Determiner("that"), Conjunction("that")],
+    //"my":[Determiner("my")],
+    "all":[Determiner("all", applyingRestriction: { $0 })],
     
     "and":[Conjunction("and")],
     "but":[Conjunction("but")],
     "then":[Conjunction("then")],
     
-    "everything":[Noun("everything")],
+    "everything":[Noun("everything", applyingSelector: { $0 })],
+    "inventory":[Noun("inventory", applyingSelector: { $0 })], // dummy function, "take inventory" is handled separately
     
     // SIMPLIFICATIONS
     // already parsed shortened versions of some common commands
@@ -166,30 +172,30 @@ let lexicon: [String: Set<PhrasalCategory>] = [
     "w":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("west")))],
     "u":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("up")))],
     "d":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("down")))],
-    "i":[RegularVerbPhrase(withVerb: Verb("take"), withNounPhrase: RegularNounPhrase(withNoun: Noun("inventory")))],
-    "l":[RegularVerbPhrase(withVerb: Verb("look"))],
+    "i":[RegularVerbPhrase(withVerb: Verb("take"), withNounPhrase: RegularNounPhrase(withNoun: Noun("inventory", applyingSelector: { $0 })))],
+    "l":[RegularVerbPhrase(withVerb: Verb("look"))]
     
     // and some things (nouns) for testing ---------------------
     
-    "inventory":[Noun("inventory")],
-    "self":[Noun("self")],
-    "pick":[Noun("pick"), Verb("unlock")],
-    "broom":[Noun("broom")],
-    "room":[Noun("room")],
-    "door":[Noun("door")],
-    "chair":[Noun("chair")],
-    "me":[Noun("me")],
-    "egg":[Noun("egg")],
-    "pan":[Noun("pan")],
-    "spoon":[Noun("spoon")],
-    "fork":[Noun("fork")],
-    "knife":[Noun("knife")],
-    "sword":[Noun("sword")],
-    "longsword":[Noun("longsword")],
-    "bow":[Noun("bow")],
-    "longbow":[Noun("longbow")],
-    "mary":[Noun("mary")],
-    "foe":[Noun("foe")]
+    //"inventory":[Noun("inventory", applyingSelector: {})],
+    //"self":[Noun("self")],
+    //"pick":[Noun("pickaxe"), Verb("unlock")],
+    //"broom":[Noun("broom")],
+    //"room":[Noun("room")],
+    //"door":[Noun("door", applyingSelector: {$0 is Door})],
+    //"chair":[Noun("chair")],
+    //"me":[Noun("me")],
+    //"egg":[Noun("egg")],
+    //"pan":[Noun("pan")],
+    //"spoon":[Noun("spoon")],
+    //"fork":[Noun("fork")],
+    //"knife":[Noun("knife")],
+    //"sword":[Noun("sword")],
+    //"longsword":[Noun("longsword")],
+    //"bow":[Noun("bow")],
+    //"longbow":[Noun("longbow")],
+    //"mary":[Noun("mary")],
+    //"foe":[Noun("foe")]
     
     // some more specfic things for testing edge cases --------
     

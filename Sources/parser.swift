@@ -1,7 +1,14 @@
 func parse(string: String, player: Player) throws -> VerbPhrase{
     
+    // SIMPLIFICATION
+    
+    var simplifiedString = string
+    for (substring, alias) in aliases {
+        simplifiedString = simplifiedString.stringByReplacingOccurrencesOfString(substring, withString: alias)
+    }
+    
     // TOKENIZING
-    let words = string.lowercaseString.stringByTrimmingCharactersInSet(whitespace).componentsSeparatedByCharactersInSet(whitespace)
+    let words = simplifiedString.lowercaseString.stringByTrimmingCharactersInSet(whitespace).componentsSeparatedByCharactersInSet(whitespace)
     
     // DICTIONARY LOOKUP
     let tokens: [Set<PhrasalCategory>] = try words.map({

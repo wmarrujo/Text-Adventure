@@ -22,6 +22,12 @@ public class Player: Creature {
     
     
     
+    // ACTIONS
+    
+    func findItems(item: NounPhrase) -> Set<Item> {
+        return []
+    }
+    
     // INTERACTIONS
     
     func input() {
@@ -68,24 +74,69 @@ public class Player: Creature {
         message(text)
     }
     
+    // _________________________
+    // PhrasalCategory Reference
+    //
+    // NounPhrase <- (Determiner) (Adjective) Noun (PrepositionalPhrase)
+    // PrepositionalPhrase <- Preposition (NounPhrase)
+    // VerbPhrase <- Verb (NounPhrase) (PrepositionalPhrase) (Adverb)
+    
     func perform(command: RegularVerbPhrase) {
         switch command.verb.word {
             case "quit":
                 if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
                     quitGame()
                 } else {
-                    message("quit failed")
+                    self.output("quit failed")
                 }
             case "go":
                 self.go(command.prepositionalPhrase)
             case "look":
-                if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
+                if let pp = command.prepositionalPhrase as? RegularPrepositionalPhrase {
+                    switch pp.preposition.word {
+                        case "at":
+                            if let np = command.nounPhrase {
+                                self.examine(np, modifier: command.adverb)
+                            } else {
+                                self.output("look at what?")
+                            }
+                        default:
+                            self.output("look what?")
+                    }
+                } else if let pp = command.prepositionalPhrase as? CompoundPrepositionalPhrase {
+                    // TODO: ????
+                } else if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
                     self.look()
                 } else {
-                    message("You're looking too complicatedly!")
+                    self.output("You're looking too complicatedly!")
+                }
+            case "examine":
+                if command.nounPhrase != nil && command.prepositionalPhrase == nil {
+                    self.examine(command.nounPhrase!, modifier: command.adverb)
+                } else {
+                    self.output("examine what?")
+                }
+            case "take":
+                if let pp = command.prepositionalPhrase as? RegularPrepositionalPhrase {
+                    switch pp.preposition.word {
+                        case "from": // take item from something
+                            if let np = command.nounPhrase {
+                                self.take(np, from: pp.nounPhrase, modifier: command.adverb)
+                            } else {
+                                self.output("take what from who?")
+                            }
+                        default:
+                            self.output("take how?")
+                    }
+                } else { // no prepositionalPhrase
+                    if let np = command.nounPhrase {
+                        self.take(np, modifier: command.adverb)
+                    } else {
+                        self.output("take what?")
+                    }
                 }
             default:
-                message("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
+                self.output("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
         }
     }
     
@@ -93,38 +144,43 @@ public class Player: Creature {
     
     func quitGame() {
         // TODO: make a quit sequence
-        message("goodbye")
+        self.output("goodbye")
         self.playing = false
     }
     
-    func take(selector: NounPhrase, modifier: Adverb?) { // transfer an item from the location to your inventory
-        // selector guaranteed not to have a prepositional phrase
-        message("took \(selector) \(modifier)")
+    func take(selector: NounPhrase, from target: NounPhrase? = nil, modifier: Adverb?) { // transfer an item from the target's inventory to your own
+        // test for if take inventory first
+        
     }
     
-    func take(selector: NounPhrase, from target: NounPhrase, modifier: Adverb?) { // transfer an item from the target's inventory to your own
-        message("took \(selector) from \(target) \(modifier)")
-    }
-    
-    func give(selector: NounPhrase, to target: NounPhrase, modifier: Adverb?) { // transfer item from your inventory to another creature's inventory
-        message("gave \(selector) to \(target) \(modifier)")
-    }
-    
-    func drop(selector: NounPhrase, modifier: Adverb?) { // transfer item from your inventory to the location
-        message("dropped \(selector) \(modifier)")
-    }
-    
-    func `throw`(selector: NounPhrase, at target: NounPhrase, modifier: Adverb?) { // transfer object to location and do damage to target
-        message("threw \(selector) at \(target) \(modifier)")
+    func give(selector: NounPhrase, to target: NounPhrase? = nil, modifier: Adverb?) { // transfer item from your inventory to another inventory
+        
     }
     
     func look() {
-        message(self.location.description)
+        self.output(self.location.description)
+    }
+    
+    func examine(object: NounPhrase, modifier: Adverb? = nil) {
+        for item in self.findItems(object) { // examine each item that matches filter
+            item.showDescription()
+            /* TODO: here
+            switch modifier {
+                case nil: // without modification
+                    // do nothing
+                case "closely":
+                    // give very long details
+                    // TODO: implement
+                    
+                default: // with unknown modification
+                    self.output("examine \(object.phrasalOutput) how?")
+            }*/
+        }
     }
     
     func go(direction: PrepositionalPhrase?) { // move from this location to another through a portal
         if direction == nil {
-            message("please specify a direction")
+            self.output("please specify a direction")
             return // abort
         }
         
@@ -133,18 +189,18 @@ public class Player: Creature {
                 case "up", "down", "north", "south", "east", "west", "northwest", "northeast", "southwest", "southeast", "in", "out":
                     self.location.go(dir.preposition.word, by: self)
                 default:
-                    message("your direction was not understood")
+                    self.output("your direction was not understood")
             }
         } else if let dir = direction as? CompoundPrepositionalPhrase { // direction is CompoundPrepositionalPhrase
             switch dir.conjunction.word {
                 case "and":
-                    message("you can't move two ways at once!")
+                    self.output("you can't move two ways at once!")
                 case "then":
                     self.go(dir.firstPrepositionalPhrase)
-                    message("then")
+                    self.output("then")
                     self.go(dir.secondPrepositionalPhrase)
                 default:
-                    message("I do not understand that conjunction in this context")
+                    self.output("I do not understand that conjunction in this context")
             }
         }
     }

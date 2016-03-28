@@ -4,7 +4,7 @@ public class Location: Thing {
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
     
-    var creature: Set<Creature>
+    var creatures: Set<Creature>
     var contents: Set<Item>
     var directions: [String:Portal?]
     
@@ -12,8 +12,8 @@ public class Location: Thing {
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
-    init(named name: String, withDescription description: String = "", withCreature creature: Set<Creature> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil, withNorthwestExit northwest: Portal? = nil, withNortheastExit northeast: Portal? = nil, withSouthwestExit southwest: Portal? = nil, withSoutheastExit southeast: Portal? = nil) {
-        self.creature = creature
+    init(named name: String, withDescription description: String = "", withCreature creatures: Set<Creature> = [], withContents contents: Set<Item> = [], withUpExit up: Portal? = nil, withDownExit down: Portal? = nil, withNorthExit north: Portal? = nil, withSouthExit south: Portal? = nil, withEastExit east: Portal? = nil, withWestExit west: Portal? = nil, withNorthwestExit northwest: Portal? = nil, withNortheastExit northeast: Portal? = nil, withSouthwestExit southwest: Portal? = nil, withSoutheastExit southeast: Portal? = nil) {
+        self.creatures = creatures
         self.contents = contents
         self.directions = ["up":up, "down":down, "north":north, "south":south, "east":east, "west":west, "northwest":northwest, "northeast":northeast, "southwest":southwest, "southeast":southeast]
         super.init(name, description)
@@ -43,10 +43,10 @@ public class Location: Thing {
                 description += "\n\t" + item.description
             }
         }
-        if !self.creature.isEmpty {
+        if !self.creatures.isEmpty {
             description += "\n here with you is:"
-            for creature in self.creature {
-                description += "\n\t" + creature.description
+            for creatures in self.creatures {
+                description += "\n\t" + creatures.description
             }
         }
         return description
@@ -54,25 +54,17 @@ public class Location: Thing {
     
     // INTERACTIONS
     
-    func perform(command: String, toItems items: Set<Item>) {
-        /*switch command {
-            case "?":
-                
-            default:
-                message("I don't know how to do that")
-        }*/
-    }
-    
-    // ACTIONS
-    
     // Movement
     
-    func enter(creature: Creature) { // called when an creature enters a location
-        self.creature.insert(creature)
+    func enter(creatures: Creature) { // called when an creatures enters a location
+        self.creatures.insert(creatures)
+        if creatures is Player {
+            (creatures as! Player).output(self.description)
+        }
     }
     
-    func exit(creature: Creature) {
-        self.creature.remove(creature)
+    func exit(creatures: Creature) {
+        self.creatures.remove(creatures)
     }
     
     func go(direction: String, by caller: Creature) {
@@ -81,6 +73,16 @@ public class Location: Thing {
         } else { // can't go that way
             message("you can't go that way!")
         }
+    }
+    
+    // Items
+    
+    func insert(item: Item) {
+        self.contents.insert(item)
+    }
+    
+    func extract(item: Item) {
+        self.contents.remove(item)
     }
     
 }

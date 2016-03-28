@@ -23,7 +23,11 @@ public class Thing: Equatable, Hashable {
     ////////////////////////////////////////////////////////////////
     // METHODS
     ////////////////////////////////////////////////////////////////
-
+    
+    func showName() -> String {
+        return self.name
+    }
+    
     func showDescription() -> String {
         return self.description
     }
