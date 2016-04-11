@@ -30,5 +30,21 @@ public class Creature: Thing {
     func move(direction: String) {
         self.location.go(direction, by: self)
     }
+    
+    func showInventory() -> String {
+        var string = ""
+        
+        if self.inventory.isEmpty {
+            string = "Inventory Empty"
+        } else {
+            string = "Inventory"
+            
+            for item in self.inventory {
+                string += "\n- " + item.name
+            }
+        }
+        
+        return string
+    }
 
 }

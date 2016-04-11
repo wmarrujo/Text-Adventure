@@ -25,28 +25,18 @@ public class Location: Thing {
     
     // STATUS
     
-    func findItemsWithSelector(selector: (Item) -> Bool) -> Set<Item> {
-        var items: Set<Item> = []
-        for item in self.contents {
-            if selector(item) { // if item matches rule
-                items.insert(item)
-            }
-        }
-        return items
-    }
-    
-    override func showDescription() -> String {
+    func showDescription(caller: Player) -> String {
         var description = self.description
         if !self.contents.isEmpty {
-            description += "\n You see around you:"
+            description += "\n\nYou see around you:"
             for item in self.contents {
                 description += "\n\t" + item.description
             }
         }
-        if !self.creatures.isEmpty {
-            description += "\n here with you is:"
-            for creatures in self.creatures {
-                description += "\n\t" + creatures.description
+        if !self.creatures.subtract([caller]).isEmpty {
+            description += "\n\nhere with you is:"
+            for creature in self.creatures.subtract([caller]) {
+                description += "\n\t" + creature.name
             }
         }
         return description
@@ -77,12 +67,12 @@ public class Location: Thing {
     
     // Items
     
-    func insert(item: Item) {
-        self.contents.insert(item)
+    func insert(items: Set<Item>) {
+        self.contents.unionInPlace(items)
     }
     
-    func extract(item: Item) {
-        self.contents.remove(item)
+    func extract(items: Set<Item>) {
+        self.contents.subtractInPlace(items)
     }
     
 }

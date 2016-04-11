@@ -85,6 +85,7 @@ public class Player: Creature {
         switch command.verb.word {
             case "quit":
                 if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
+                    // TODO: are you sure? do you want to save?
                     quitGame()
                 } else {
                     self.output("quit failed")
@@ -149,8 +150,39 @@ public class Player: Creature {
     }
     
     func take(selector: NounPhrase, from target: NounPhrase? = nil, modifier: Adverb?) { // transfer an item from the target's inventory to your own
-        // test for if take inventory first
-        
+        if (selector as! RegularNounPhrase).noun.word == "inventory" { // take inventory
+            self.output(self.showInventory())
+        } else { // take the item
+            var items: Set<Item> = []
+            do {
+                if target == nil { // take from the location
+                    items = try selector.select(fromItems: self.location.contents)
+                } else { // take from the location specified
+                    // TODO: add support for "take from [container]" && "take from [creature]" etc.
+                    items = try selector.select(fromItems: self.location.contents)
+                }
+            } catch EvaluationError.DeterminerDidNotMatch(let determiner) {
+                switch determiner {
+                    case "the": // will be an error only if there are too many found and can't choose "the" item
+                        self.output("matched too many")
+                    case "a", "an": // only will be an error if it couldn't find any at all to choose from
+                        self.output("no such items found")
+                    default:
+                        self.output("could not find items with restriction of \"\(determiner)\"")
+                }
+            } catch _ {
+                self.output("unknown error when trying to find items")
+            }
+            
+            if items.isEmpty {
+                self.output("no such items found")
+            } else { // it found things to take
+                self.location.extract(items) // take the things from the location
+                self.inventory.unionInPlace(items) // put them into your inventory
+                self.output("taken")
+                // TODO: test if it works
+            }
+        }
     }
     
     func give(selector: NounPhrase, to target: NounPhrase? = nil, modifier: Adverb?) { // transfer item from your inventory to another inventory
@@ -158,7 +190,7 @@ public class Player: Creature {
     }
     
     func look() {
-        self.output(self.location.description)
+        self.output(self.location.showDescription(self))
     }
     
     func examine(object: NounPhrase, modifier: Adverb? = nil) {

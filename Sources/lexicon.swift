@@ -149,9 +149,9 @@ let lexicon: [String:Set<PhrasalCategory>] = [
     //"with":[Preposition],
     //"using":[Preposition],
     
-    "the":[Determiner("the", applyingRestriction: { if $0.count == 1 { return $0 } else { throw EvaluationError.DeterminerDidNotMatch(determiner: "the", didNotMatch: $0) } })],
-    "a":[Determiner("a", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a", didNotMatch: $0) } else { return [$0.first!] } })],
-    "an":[Determiner("an", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a", didNotMatch: $0) } else { return [$0.first!] } })],
+    "the":[Determiner("the", applyingRestriction: { if $0.count <= 1 { return $0 } else { throw EvaluationError.DeterminerDidNotMatch(determiner: "the") } })],
+    "a":[Determiner("a", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a") } else { return [$0.first!] } })],
+    "an":[Determiner("an", applyingRestriction: { if $0.isEmpty { throw EvaluationError.DeterminerDidNotMatch(determiner: "a") } else { return [$0.first!] } })],
     //"that":[Determiner("that"), Conjunction("that")],
     //"my":[Determiner("my")],
     "all":[Determiner("all", applyingRestriction: { $0 })],
@@ -173,14 +173,16 @@ let lexicon: [String:Set<PhrasalCategory>] = [
     "u":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("up")))],
     "d":[RegularVerbPhrase(withVerb: Verb("go"), withPrepositionalPhrase: RegularPrepositionalPhrase(withPreposition: Preposition("down")))],
     "i":[RegularVerbPhrase(withVerb: Verb("take"), withNounPhrase: RegularNounPhrase(withNoun: Noun("inventory", applyingSelector: { $0 })))],
-    "l":[RegularVerbPhrase(withVerb: Verb("look"))]
+    "l":[RegularVerbPhrase(withVerb: Verb("look"))],
+    "x":[RegularVerbPhrase(withVerb: Verb("examine"))],
+    "q":[RegularVerbPhrase(withVerb: Verb("quit"))],
     
     // and some things (nouns) for testing ---------------------
     
     //"inventory":[Noun("inventory", applyingSelector: {})],
     //"self":[Noun("self")],
     //"pick":[Noun("pickaxe"), Verb("unlock")],
-    //"broom":[Noun("broom")],
+    "broom":[Noun("broom", applyingSelector: { Set($0.filter({ $0.name == "broom" })) })] // change when we make a broom class
     //"room":[Noun("room")],
     //"door":[Noun("door", applyingSelector: {$0 is Door})],
     //"chair":[Noun("chair")],

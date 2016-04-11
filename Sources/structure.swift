@@ -223,6 +223,7 @@ class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
         }
         if let restriction = self.determiner {
             selection = try restriction.applyRestriction(toItems: selection) // filter by quantifier
+            // throws instead of returning an empty set just in case the action may want to do something special upon recieving an empty set
         }
         return selection
     }
@@ -304,7 +305,7 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
         var selection = items
         if let objects = try self.nounPhrase?.select(fromItems: items) {
             if objects.count > 0 {
-                throw EvaluationError.DeterminerDidNotMatch(determiner: "the", didNotMatch: objects) // could not choose a reference point
+                throw EvaluationError.DeterminerDidNotMatch(determiner: "the") // could not choose a reference point
             } else if objects.isEmpty {
                 throw EvaluationError.NoMatches(self.nounPhrase!)
             }
@@ -517,6 +518,6 @@ enum EvaluationError: ErrorType {
     case UnknownUsage(ofPhrase: PhrasalCategory) // Unknown Usage of the phrase
     case NotEnoughInformation(inPhrase: PhrasalCategory) // Fragment
     case NotAContainer(Item) // if it tries to access the inside of something that's not a container
-    case DeterminerDidNotMatch(determiner: String, didNotMatch: Set<Item>) // "the" found multiple, "my" found none of yours, etc.
+    case DeterminerDidNotMatch(determiner: String) // "the" found multiple, "my" found none of yours, etc.
     case NoMatches(NounPhrase) // no matches for a given NounPhrase
 }
