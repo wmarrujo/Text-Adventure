@@ -1,5 +1,7 @@
 public class Container: Item {
     
+    override class var identifiers: Set<String> { return super.identifiers.union(["container"]) }
+    
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////

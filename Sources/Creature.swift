@@ -1,4 +1,6 @@
 public class Creature: Thing {
+    
+    override class var identifiers: Set<String> { return super.identifiers.union(["food"]) }
 
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES

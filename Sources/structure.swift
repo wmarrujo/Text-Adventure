@@ -227,6 +227,13 @@ class RegularNounPhrase: PhrasalCategory, NounPhrase { // Selects Items
         }
         return selection
     }
+    
+    // CONVENIENCE
+    
+    var det: Determiner? { return self.determiner }
+    var adj: Adjective? { return self.adjective }
+    var n: Noun { return self.noun }
+    var pp: PrepositionalPhrase? { return self.prepositionalPhrase }
 }
 
 class CompoundNounPhrase: PhrasalCategory, NounPhrase {
@@ -245,6 +252,8 @@ class CompoundNounPhrase: PhrasalCategory, NounPhrase {
         phrasalOutput += ["[" + self.secondNounPhrase.phrasalOutput + "]"]
         return phrasalOutput.joinWithSeparator(" ")
     }
+    
+    // INITIALIZERS
     
     init(withNounPhrase firstNounPhrase: NounPhrase, conjunction: Conjunction, andNounPhrase secondNounPhrase: NounPhrase) {
         self.firstNounPhrase = firstNounPhrase
@@ -267,6 +276,12 @@ class CompoundNounPhrase: PhrasalCategory, NounPhrase {
                 throw EvaluationError.UnknownUsage(ofPhrase: self)
         }
     }
+    
+    // CONVENIENCE
+    
+    var np1: NounPhrase { return self.firstNounPhrase }
+    var conj: Conjunction { return self.conjunction }
+    var np2: NounPhrase { return self.secondNounPhrase }
 }
 
 protocol PrepositionalPhrase: OutputsPhrasally {
@@ -291,6 +306,7 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
     }
     
     // INITIALIZERS
+    
     init(withPreposition preposition: Preposition, withNounPhrase nounPhrase: NounPhrase? = nil) {
         self.preposition = preposition
         self.nounPhrase = nounPhrase
@@ -336,6 +352,11 @@ class RegularPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase { // Filt
         }
         return selection
     }
+    
+    // CONVENIENCE
+    
+    var prep: Preposition { return self.preposition }
+    var np: NounPhrase? { return self.nounPhrase }
 }
 
 class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
@@ -355,6 +376,8 @@ class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
         return phrasalOutput.joinWithSeparator(" ")
     }
     
+    // INITIALIZERS
+    
     init(withPrepositionalPhrase firstPrepositionalPhrase: PrepositionalPhrase, conjunction: Conjunction, andPrepositionalPhrase secondPrepositionalPhrase: PrepositionalPhrase) {
         self.firstPrepositionalPhrase = firstPrepositionalPhrase
         self.conjunction = conjunction
@@ -370,6 +393,12 @@ class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
         // TODO: check for "and", "or", etc.
         return try self.firstPrepositionalPhrase.changeReference(items).union(try self.secondPrepositionalPhrase.changeReference(items))
     }
+    
+    // CONVENIENCE
+    
+    var pp1: PrepositionalPhrase { return self.firstPrepositionalPhrase }
+    var conj: Conjunction { return self.conjunction }
+    var pp2: PrepositionalPhrase { return self.secondPrepositionalPhrase }
 }
 
 protocol VerbPhrase: OutputsPhrasally {
@@ -402,6 +431,7 @@ class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
     }
     
     // INITIALIZERS
+    
     init(withVerb verb: Verb, withNounPhrase nounPhrase: NounPhrase? = nil, withPrepositionalPhrase prepositionalPhrase: PrepositionalPhrase? = nil, withAdverb adverb: Adverb? = nil) {
         self.verb = verb
         self.nounPhrase = nounPhrase
@@ -413,9 +443,17 @@ class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
     }
     
     // METHODS
+    
     func perform(player: Player) {
         player.perform(self)
     }
+    
+    // CONVENIENCE
+    
+    var v: Verb { return self.verb }
+    var np: NounPhrase? { return self.nounPhrase }
+    var pp: PrepositionalPhrase? { return self.prepositionalPhrase }
+    var adv: Adverb? { return self.adverb }
 }
 
 class CompoundVerbPhrase: PhrasalCategory {
@@ -445,11 +483,18 @@ class CompoundVerbPhrase: PhrasalCategory {
     }
     
     // METHODS
+    
     func perform(player: Player) {
         // TODO: maybe check for type of conjunction for "and" not "or" or something
         self.firstVerbPhrase.perform(player)
         self.secondVerbPhrase.perform(player)
     }
+    
+    // CONVENIENCE
+    
+    var vp1: VerbPhrase { return self.firstVerbPhrase }
+    var conj: Conjunction { return self.conjunction }
+    var vp2: VerbPhrase { return self.secondVerbPhrase }
 }
 
 // COMPOUND PHRASAL CATEGORIES
@@ -520,4 +565,124 @@ enum EvaluationError: ErrorType {
     case NotAContainer(Item) // if it tries to access the inside of something that's not a container
     case DeterminerDidNotMatch(determiner: String) // "the" found multiple, "my" found none of yours, etc.
     case NoMatches(NounPhrase) // no matches for a given NounPhrase
+}
+
+////////////////////////////////////////////////////////////////
+// CONVENIENCE
+////////////////////////////////////////////////////////////////
+
+// CONSTRUCTORS
+
+func v(word: String) -> Verb {
+    return Verb(word)
+}
+
+func n(word: String, sel: ((Set<Item>) -> Set<Item>)? = nil) -> Noun {
+    var selector: (Set<Item>) -> Set<Item> = { Set($0.filter({ $0.name == word || $0.dynamicType.identifiers.contains(word) })) } // if name of item or identifier of class matches word
+    
+    if let s = sel {
+        selector = s
+    }
+    
+    return Noun(word, applyingSelector: selector)
+}
+
+func adj(word: String, filter: ((Item) -> Bool)? = nil) -> Adjective {
+    var fil: (Item) -> Bool = { $0.attributes.contains(word) }
+    
+    if let f = filter {
+        fil = f
+    }
+    
+    return Adjective(word, applyingFilter: fil)
+}
+
+func adv(word: String) -> Adverb {
+    return Adverb(word)
+}
+
+func prep(word: String) -> Preposition {
+    return Preposition(word)
+}
+
+func conj(word: String) -> Conjunction {
+    return Conjunction(word)
+}
+
+func det(word: String, restr: (Set<Item>) throws -> Set<Item>) -> Determiner {
+    return Determiner(word, applyingRestriction: restr)
+}
+
+func np(det: Determiner? = nil, adj: Adjective? = nil, n: Noun, pp: PrepositionalPhrase? = nil) -> RegularNounPhrase {
+    return RegularNounPhrase(withDeterminer: det, withAdjective: adj, withNoun: n, withPrepositionalPhrase: pp)
+}
+
+func np(np1: NounPhrase, conj: Conjunction, np2: NounPhrase) -> CompoundNounPhrase {
+    return CompoundNounPhrase(withNounPhrase: np1, conjunction: conj, andNounPhrase: np2)
+}
+
+func pp(prep prep: Preposition, np: NounPhrase? = nil) -> RegularPrepositionalPhrase {
+    return RegularPrepositionalPhrase(withPreposition: prep, withNounPhrase: np)
+}
+
+func pp(pp1: PrepositionalPhrase, conj: Conjunction, pp2: PrepositionalPhrase) -> CompoundPrepositionalPhrase {
+    return CompoundPrepositionalPhrase(withPrepositionalPhrase: pp1, conjunction: conj, andPrepositionalPhrase: pp2)
+}
+
+func vp(v v: Verb, np: NounPhrase? = nil, pp: PrepositionalPhrase? = nil, adv: Adverb? = nil) -> RegularVerbPhrase {
+    return RegularVerbPhrase(withVerb: v, withNounPhrase: np, withPrepositionalPhrase: pp, withAdverb: adv)
+}
+
+func vp(vp1: VerbPhrase, conj: Conjunction, vp2: VerbPhrase) -> CompoundVerbPhrase {
+    return CompoundVerbPhrase(withVerbPhrase: vp1, conjunction: conj, andVerbPhrase: vp2)
+}
+
+// TESTS
+
+func isCompound(np: NounPhrase?) -> Bool {
+    return np is CompoundNounPhrase
+}
+
+func isCompound(pp: PrepositionalPhrase?) -> Bool {
+    return pp is CompoundPrepositionalPhrase
+}
+
+func isCompound(vp: VerbPhrase?) -> Bool {
+    return vp is CompoundVerbPhrase
+}
+
+func isCompound(adj: Adjective?) -> Bool {
+    return adj is CompoundAdjective
+}
+
+func isCompound(adv: Adverb?) -> Bool {
+    return adv is CompoundAdverb
+}
+
+func hasDeterminer(np: RegularNounPhrase) -> Bool {
+    return np.det != nil
+}
+
+func hasAdjective(np: RegularNounPhrase) -> Bool {
+    return np.adj != nil
+}
+
+func hasPrepositionalPhrase(np: RegularNounPhrase) -> Bool {
+    return np.pp != nil
+}
+
+func hasNounPhrase(pp: RegularPrepositionalPhrase) -> Bool {
+    return pp.np != nil
+}
+
+func hasNounPhrase(vp: RegularVerbPhrase) -> Bool {
+    return vp.np != nil
+}
+
+func hasPrepositionalPhrase(vp: RegularVerbPhrase) -> Bool {
+    return vp.pp != nil
+}
+
+func hasAdverb(vp: RegularVerbPhrase) -> Bool {
+    return vp.adv != nil
 }

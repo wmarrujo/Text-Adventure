@@ -22,4 +22,5 @@ Use a functional style as much as possible
 
 - [Swift Server](https://www.perfect.org)
 - CFRunLoop (for game loop)
+- Alamofire
 - Command Line Control Codes (to print messages to the screen while inputting (like ncurses))

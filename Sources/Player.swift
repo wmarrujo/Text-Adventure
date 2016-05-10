@@ -1,5 +1,7 @@
 public class Player: Creature {
     
+    override class var identifiers: Set<String> { return super.identifiers.union(["player"]) }
+    
     ////////////////////////////////////////////////////////////////
     // INSTANCE VARIABLES
     ////////////////////////////////////////////////////////////////
@@ -84,58 +86,66 @@ public class Player: Creature {
     func perform(command: RegularVerbPhrase) {
         switch command.verb.word {
             case "quit":
-                if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
-                    // TODO: are you sure? do you want to save?
+                if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                    // TODO: check for save
                     quitGame()
                 } else {
                     self.output("quit failed")
                 }
+            
+            
             case "go":
-                self.go(command.prepositionalPhrase)
+                self.go(command.pp)
+            
+            
             case "look":
-                if let pp = command.prepositionalPhrase as? RegularPrepositionalPhrase {
-                    switch pp.preposition.word {
+                if hasPrepositionalPhrase(command) && isCompound(command.pp) {
+                    switch (command.pp as! RegularPrepositionalPhrase).prep.word {
                         case "at":
-                            if let np = command.nounPhrase {
-                                self.examine(np, modifier: command.adverb)
+                            if hasNounPhrase(command) {
+                                self.examine(command.np!, modifier: command.adv)
                             } else {
                                 self.output("look at what?")
                             }
                         default:
                             self.output("look what?")
                     }
-                } else if let pp = command.prepositionalPhrase as? CompoundPrepositionalPhrase {
-                    // TODO: ????
-                } else if command.nounPhrase == nil && command.prepositionalPhrase == nil && command.adverb == nil {
+                } else if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
                     self.look()
                 } else {
                     self.output("You're looking too complicatedly!")
                 }
+            
+            
             case "examine":
-                if command.nounPhrase != nil && command.prepositionalPhrase == nil {
-                    self.examine(command.nounPhrase!, modifier: command.adverb)
+                if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
+                    self.examine(command.np!, modifier: command.adv)
                 } else {
                     self.output("examine what?")
                 }
+            
+            
             case "take":
-                if let pp = command.prepositionalPhrase as? RegularPrepositionalPhrase {
-                    switch pp.preposition.word {
-                        case "from": // take item from something
-                            if let np = command.nounPhrase {
-                                self.take(np, from: pp.nounPhrase, modifier: command.adverb)
+                if hasPrepositionalPhrase(command) && !isCompound(command.pp) {
+                    switch (command.pp as! RegularPrepositionalPhrase).prep.word {
+                        case "from":
+                            if hasNounPhrase(command) {
+                                self.take(command.np!, modifier: command.adv)
                             } else {
                                 self.output("take what from who?")
                             }
                         default:
                             self.output("take how?")
                     }
-                } else { // no prepositionalPhrase
-                    if let np = command.nounPhrase {
-                        self.take(np, modifier: command.adverb)
+                } else {
+                    if hasNounPhrase(command) {
+                        self.take(command.np!, modifier: command.adv)
                     } else {
                         self.output("take what?")
                     }
                 }
+            
+            
             default:
                 self.output("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
         }
