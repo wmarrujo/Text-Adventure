@@ -1,8 +1,7 @@
-func message(message: String) { // prints a message to the terminal
+func message(messages: String...) { // prints a message to the terminal
     // TODO; figure out how to print above input line
+    let message = messages[Int.random(0..<messages.count)]
     print(message)
-    // TODO: make it a variable number of arguments so that if they put in multiple strings
-    // TODO: it will choose one at random. making the game more funny or something
 }
 
 func prompt(prompt: String, withNewlineAfterPrompt newline: Bool = false) -> String {

@@ -41,6 +41,8 @@ public class Player: Creature {
         } catch SyntaxError.NoMatchesInLexicon(let word) {
             self.output("I do not know what you mean by \"\(word)\". Perhaps you misspelled the word?")
             // TODO: maybe do some searching for words that are close?
+        } catch SyntaxError.ForgotEndQuotation(let string) {
+            self.output("You seemed to have forgotten to close your quotation somewhere in:\n\t\(string)")
         } catch GrammarError.TooManyTokensLeft(let tokens) { // cannot match grammar fully
             // the
             func formatTokens(tokens: [Set<PhrasalCategory>]) -> String {
@@ -83,6 +85,7 @@ public class Player: Creature {
     // PrepositionalPhrase <- Preposition (NounPhrase)
     // VerbPhrase <- Verb (NounPhrase) (PrepositionalPhrase) (Adverb)
     
+    // The function that takes the command as a syntax tree and separates out the various data and applies them to the correct action function, or displays an appropriate error message
     func perform(command: RegularVerbPhrase) {
         switch command.verb.word {
             case "quit":
@@ -143,6 +146,14 @@ public class Player: Creature {
                     } else {
                         self.output("take what?")
                     }
+                }
+            
+            
+            case "say":
+                if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
+                    self.say((command.np as! RegularNounPhrase).n.word, modifier: command.adv)
+                } else { // TODO: add support for target
+                    self.output("say what?")
                 }
             
             
@@ -245,6 +256,14 @@ public class Player: Creature {
                     self.output("I do not understand that conjunction in this context")
             }
         }
+    }
+    
+    func say(phrase: String, to target: NounPhrase? = nil, modifier: Adverb?) {
+        // TODO: say to however many people are in room
+        // TODO: say loudly = yell to people in room and adjacent rooms
+        // TODO: say softly = whisper = tell to a specific person, but notify others in room that you whispered/spoke to someone specific
+        // TODO: say discreetly to a specific person & have a higher chance to not notify others in the room
+        self.output(phrase)
     }
     
 }

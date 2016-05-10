@@ -3,23 +3,63 @@ func parse(string: String, player: Player) throws -> VerbPhrase{
     // SIMPLIFICATION
     
     var simplifiedString = string
+    
+    // substitute aliases
     for (substring, alias) in aliases {
         simplifiedString = simplifiedString.stringByReplacingOccurrencesOfString(substring, withString: alias)
     }
     
+    // remove whitespace before & after string
+    simplifiedString = simplifiedString.stringByTrimmingCharactersInSet(whitespace)
+    
     // TOKENIZING
-    let words = simplifiedString.lowercaseString.stringByTrimmingCharactersInSet(whitespace).componentsSeparatedByCharactersInSet(whitespace)
+    
+    var words: [String] = []
+    
+    // separate string by whitespace, but combine quotations
+    var inQuote: Bool = false
+    var start: Int = 0
+    for (index, char) in simplifiedString.characters.enumerate() {
+        if !inQuote { // not in a quote
+            if char == " " || char == "\t" || char == "\n" { // char is a whitespace character
+                words += [simplifiedString.substringWithRange(simplifiedString.startIndex.advancedBy(start)..<simplifiedString.startIndex.advancedBy(index))] // split word
+                start = index + 1 // mark the start of the next word
+            } else if char == "\"" { // if it's the beginning of a quotation
+                words += [simplifiedString.substringWithRange(simplifiedString.startIndex.advancedBy(start)..<simplifiedString.startIndex.advancedBy(index))] // split word
+                inQuote = true // raise flag
+                start = index // mark the start of the quote
+            }
+        } else { // in a quote
+            if char == "\"" {
+                words += [simplifiedString.substringWithRange(simplifiedString.startIndex.advancedBy(start)...simplifiedString.startIndex.advancedBy(index))] // split word
+                inQuote = false // lower flag
+                start = index + 1
+            }
+        }
+    }
+    words += [simplifiedString.substringWithRange(simplifiedString.startIndex.advancedBy(start)..<simplifiedString.endIndex)] // add last word
+    
+    // filter out multiple spaces
+    words = words.filter({ $0 != "" })
     
     // DICTIONARY LOOKUP
     let tokens: [Set<PhrasalCategory>] = try words.map({
         (word: String) throws -> Set<PhrasalCategory> in
+        var token: Set<PhrasalCategory> = [n("error")] // should always be overwritten
         
-        guard let token = lexicon[word] else {
-            throw SyntaxError.NoMatchesInLexicon(word: word)
+        if word.characters.first == "\"" && word.characters.last == "\"" { // if it is a quote
+            token = [n(word)] // make a noun out of the quote
+        } else if word.characters.first == "\"" { // && word.characters.last != "\"" // then they forgot a quotation mark
+            throw SyntaxError.ForgotEndQuotation(string: word) // tell the user
+        } else { // if it is a regular word
+            guard let t = lexicon[word] else { // try to match with word in lexicon
+                throw SyntaxError.NoMatchesInLexicon(word: word) // raise error if it doesn't match anything in the lexicon
+            }
+            token = t
         }
         
         return token
-    }) // FIXME: account for this
+    })
     
     // PARSING
     let phrase = try construct(tokens)
@@ -96,6 +136,7 @@ func applyRules(tokens: [Set<PhrasalCategory>]) throws -> Set<PhrasalCategory> {
 
 enum SyntaxError: ErrorType {
     case NoMatchesInLexicon(word: String) // Misspelled?
+    case ForgotEndQuotation(string: String) // Forgot to end their quotation
 }
 
 enum GrammarError: ErrorType {
