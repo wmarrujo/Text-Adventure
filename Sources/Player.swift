@@ -1,3 +1,5 @@
+import Foundation
+
 public class Player: Creature {
     
     override class var identifiers: Set<String> { return super.identifiers.union(["player"]) }
@@ -94,6 +96,21 @@ public class Player: Creature {
                     quitGame()
                 } else {
                     self.output("quit failed")
+                }
+            
+            
+            case "save":
+                if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                    // trim the leading and trailing quotations if it has them
+                    var location = (command.np as! RegularNounPhrase).noun.word
+                    if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
+                        location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
+                        self.saveGame(to: location)
+                    } else {
+                        self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                    }
+                } else {
+                    self.output("I don't understand how it is you want me to save\nThe syntax is:\n\tsave \"filename or full path\"")
                 }
             
             
@@ -265,5 +282,29 @@ public class Player: Creature {
         // TODO: say discreetly to a specific person & have a higher chance to not notify others in the room
         self.output(phrase)
     }
+    
+    func saveGame(to location: String) {
+        let gameString = "test file contents"
+        
+        do {
+            if location.characters.first == "/" { // in absolute directory
+                try save(gameString, to: location)
+            } else { // in current directory
+                try saveInCurrentDirectory(gameString, to: location)
+            }
+            
+            self.output("saved successfully!")
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+    }
+    /*
+    func load(from location: String) {
+        do {
+            print(try readInCurrentDirectory("test/test.txt"))
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+    }*/
     
 }

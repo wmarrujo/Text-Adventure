@@ -7,7 +7,7 @@ let lexicon: [String:Set<PhrasalCategory>] = [
     "examine":[v("examine")],
     //"glance":[v],
     "read":[v("read")],
-    //"save":[v("save")],
+    "save":[v("save")],
     //"load":[v("load")],
     //"restore":[v("load")],
     "quit":[v("quit")],
@@ -162,7 +162,8 @@ let lexicon: [String:Set<PhrasalCategory>] = [
     "then":[conj("then")],
     
     "everything":[n("everything", sel: { $0 })],
-    "inventory":[n("inventory", sel: { $0 })], // dummy function, "take inventory" is handled separately
+    "inventory":[m("inventory")],
+    "game":[m("game")],
     
     // SIMPLIFICATIONS
     // already parsed shortened versions of some common commands

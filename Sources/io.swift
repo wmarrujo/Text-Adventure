@@ -24,15 +24,18 @@ func prompt(prompt: String, withNewlineAfterPrompt newline: Bool = false) -> Str
 
 // FILE INTERFACE
 
-func save(contents: String, to path: String) -> String {
-    do {
-        try contents.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
-        return "successfully wrote to file \"\(path)\""
-    } catch {
-        return "error saving file at path \"\(path)\" with error: \(error)"
-    }
+func save(contents: String, to path: String) throws {
+    try contents.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
 }
 
-func saveInCurrentDirectory(contents: String, to filename: String) -> String {
-    return save(contents, to: NSFileManager.defaultManager().currentDirectoryPath + filename)
+func saveInCurrentDirectory(contents: String, to filename: String) throws {
+    try save(contents, to: NSFileManager.defaultManager().currentDirectoryPath + "/" + filename)
+}
+
+func read(path: String) throws -> String {
+    return try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+}
+
+func readInCurrentDirectory(filename: String) throws -> String {
+    return try read(NSFileManager.defaultManager().currentDirectoryPath + "/" + filename)
 }

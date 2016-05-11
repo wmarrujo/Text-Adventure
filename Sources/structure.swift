@@ -587,6 +587,10 @@ func n(word: String, sel: ((Set<Item>) -> Set<Item>)? = nil) -> Noun {
     return Noun(word, applyingSelector: selector)
 }
 
+func m(word: String) -> Noun { // creates a dummy noun where the whole point is to match it in the patterns later, mainly for words that are nouns, but point to something that isn't an item
+    return n(word, sel: { (setofItems: Set<Item>) -> Set<Item> in return Set<Item>() })
+}
+
 func adj(word: String, filter: ((Item) -> Bool)? = nil) -> Adjective {
     var fil: (Item) -> Bool = { $0.attributes.contains(word) }
     
