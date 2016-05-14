@@ -402,7 +402,7 @@ class CompoundPrepositionalPhrase: PhrasalCategory, PrepositionalPhrase {
 }
 
 protocol VerbPhrase: OutputsPhrasally {
-    func perform(player: Player)
+    func perform(user: Game)
 }
 
 class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
@@ -444,8 +444,8 @@ class RegularVerbPhrase: PhrasalCategory, VerbPhrase { // Performs Action
     
     // METHODS
     
-    func perform(player: Player) {
-        player.perform(self)
+    func perform(user: Game) {
+        user.perform(self)
     }
     
     // CONVENIENCE
@@ -484,10 +484,10 @@ class CompoundVerbPhrase: PhrasalCategory {
     
     // METHODS
     
-    func perform(player: Player) {
+    func perform(user: Game) {
         // TODO: maybe check for type of conjunction for "and" not "or" or something
-        self.firstVerbPhrase.perform(player)
-        self.secondVerbPhrase.perform(player)
+        self.firstVerbPhrase.perform(user)
+        self.secondVerbPhrase.perform(user)
     }
     
     // CONVENIENCE

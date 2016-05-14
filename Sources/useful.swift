@@ -25,3 +25,25 @@ extension Int {
         return Int(mini + arc4random_uniform(maxi - mini)) - offset
     }
 }
+
+extension Dictionary {
+    init(keys: [Key], values: [Value]) {
+        self.init()
+
+        for (key, value) in zip(keys, values) {
+            self[key] = value
+        }
+    }
+}
+
+extension Dictionary {
+    func mapValues<T>(@noescape transform: Value -> T) -> [Key:T] { // maps a function to only the values, re-pairing them with the keys
+        var newDictionary: [Key:T] = [:]
+        
+        for (key, value) in self {
+            newDictionary[key] = transform(value)
+        }
+        
+        return newDictionary
+    }
+}

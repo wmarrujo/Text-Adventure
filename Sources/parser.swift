@@ -1,4 +1,4 @@
-func parse(string: String, player: Player) throws -> VerbPhrase{
+func parse(string: String) throws -> VerbPhrase{
     
     // SIMPLIFICATION
     
