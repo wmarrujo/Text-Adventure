@@ -17,7 +17,7 @@ let defaultGame = JSON.parse("{\"starting locations\":[0],\"things\":[{\"id\":0,
 ////////////////////////////////////////////////////////////////
 
 func enterUsername() -> String {
-    print("Enter username:", terminator: "")
+    print("Enter username: ", terminator: "")
     var username = ""
     
     username = prompt("")
@@ -43,7 +43,8 @@ func validateUsername(username: String) -> Bool {
 
 // Get username
 
-print("\u{001B}[2J") // clear screen
+clearScreen()
+moveCursorToHome()
 
 var username = ""
 var validUsername = false
