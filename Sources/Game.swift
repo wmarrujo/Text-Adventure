@@ -16,24 +16,44 @@ public class Game {
     
     var host: Player!
     var user: Player!
+    
     var things: Set<Thing>
     
     var playing: Bool
+    
+    // World
+    
+    var startingLocationIDs: [Int]
+    
+    var startingLocations: [Location] {
+        get {
+            var locations: [Location] = []
+            
+            for id in self.startingLocationIDs {
+                locations.append(self.getThingByID(id) as! Location)
+            }
+            
+            return locations
+        }
+        set {
+            var ids: [Int] = []
+            
+            for location in newValue {
+                ids.append(location.id)
+            }
+            
+            self.startingLocationIDs = ids
+        }
+    }
     
     ////////////////////////////////////////////////////////////////
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////
     
     init(withJSON json: JSON, andUserWithName username: String, andDescription description: String = "") { // initialize a default game, with you as the user and the host
-        let things: [JSON] = json["things"].arrayValue
-        let startingLocations: [JSON] = json["starting locations"].arrayValue
-        
-        // TODO: Validate against json, load default if does not match minimum required for a game
-        // TODO: test if starting locations has at least 1 id, and if that id matches a location in things
-        
-        
         // SET UP INSTANCE VARIABLES TO MAKE SELF AVAILABLE
         
+        self.startingLocationIDs = []
         self.things = []
         self.playing = false
         self.user = nil
@@ -41,46 +61,95 @@ public class Game {
         
         // AFTER SELF IS AVAILABLE
         
-        // Load things in default world
-        for thingJSON in things {
-            var thing: Thing?
-            
-            switch thingJSON["type"].stringValue {
-                case "Thing":
-                    thing = Thing(inGame: self, fromJSON: thingJSON)
-                case "Location":
-                    thing = Location(inGame: self, fromJSON: thingJSON)
-                case "Portal":
-                    thing = Portal(inGame: self, fromJSON: thingJSON)
-                case "Creature":
-                    thing = Creature(inGame: self, fromJSON: thingJSON)
-                case "Player":
-                    thing = Player(inGame: self, fromJSON: thingJSON)
-                case "Item":
-                    thing = Item(inGame: self, fromJSON: thingJSON)
-                case "Container":
-                    thing = Container(inGame: self, fromJSON: thingJSON)
-                default:
-                    thing = nil
-            }
-            
-            if let t = thing {
-                self.things.insert(t) // add it to things
-            }
-            // else, do nothing
-        }
-        
-        // Load player
-        let user = Player(inGame: self, named: username, withDescription: description, withHealth: 100, atLocation: startingLocations[Int.random(0..<startingLocations.count)].intValue, withEncumbrance: 12)
-        self.user = user
-        self.host = user
-        
-        self.playing = false
+        self.overwrite(withJSON: json, asUserWithName: username)
     }
     
-    /*func overwrite(withJSON json: JSON) {
+    ////////////////////////////////////////////////////////////////
+    // ARCHIVING
+    ////////////////////////////////////////////////////////////////
+    
+    // ENCODE OBJECT TO JSON
+    
+    func toJSON() -> JSON {
+        var json: JSON = [:]
         
-    }*/
+        json["starting locations"] = JSON(self.startingLocationIDs)
+        
+        var things: [JSON] = []
+        for thing in self.things {
+            things.append(thing.toJSON())
+        }
+        json["things"] = JSON(things)
+        
+        return json
+    }
+    
+    // DECODE OBJECT FROM JSON
+    
+    func overwrite(withJSON json: JSON, asUserWithName username: String, withHost hostname: String = "") { // if no hostname specified, use username by default
+        let things: [JSON] = json["things"].arrayValue
+        let startingLocations: [Int] = json["starting locations"].arrayValue.map({ $0.intValue })
+        
+        // TODO: Validate against json, load default if does not match minimum required for a game
+        // TODO: test if starting locations has at least 1 id, and if that id matches a location in things
+        
+        // Reset Values
+        
+        self.startingLocationIDs = startingLocations
+        self.things = []
+        self.playing = false
+        self.user = nil
+        self.host = nil
+        
+        // Load things in world
+        
+        for thingJSON in things {
+            switch thingJSON["type"].stringValue {
+                case "Thing":
+                    self.addThing(Thing(inGame: self, fromJSON: thingJSON))
+                case "Location":
+                    self.addThing(Location(inGame: self, fromJSON: thingJSON))
+                case "Portal":
+                    self.addThing(Portal(inGame: self, fromJSON: thingJSON))
+                case "Creature":
+                    self.addThing(Creature(inGame: self, fromJSON: thingJSON))
+                case "Player":
+                    self.addThing(Player(inGame: self, fromJSON: thingJSON))
+                case "Item":
+                    self.addThing(Item(inGame: self, fromJSON: thingJSON))
+                case "Container":
+                    self.addThing(Container(inGame: self, fromJSON: thingJSON))
+                default:
+                    break
+            }
+        }
+        
+        // Load Player
+        
+        // find player with username
+        var user: Player! = nil
+        var host: Player! = nil
+        
+        for player in self.things.filter({ $0 is Player }) { // for only all players
+            if player.name == username {
+                user = player as! Player // load self.user into that one
+            }
+            if player.name == hostname {
+                host = player as! Player
+            }
+        }
+        
+        if user == nil { // if no user with that username
+            user = Player(inGame: self, named: username, withDescription: "oh, look. this person hasn't yet updated their description.", withHealth: 100, atLocation: startingLocations[Int.random(0..<startingLocations.count)], withEncumbrance: 20) // create new user
+            self.addThing(user!)
+        }
+        if host == nil { // if no host specified
+            host = user! // choose user to be host by default
+        }
+        
+        self.user = user
+        self.host = host
+    }
     
     ////////////////////////////////////////////////////////////////
     // METHODS
@@ -209,6 +278,21 @@ public class Game {
                 }
             
             
+            case "load":
+                if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                    // trim the leading and trailing quotations if it has them
+                    var location = (command.np as! RegularNounPhrase).noun.word
+                    if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
+                        location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
+                        self.loadGame(from: location)
+                    } else {
+                        self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                    }
+                } else {
+                    self.output("I don't understand how it is you want me to load\nThe syntax is:\n\tsave \"filename or full path\"")
+                }
+            
+            
             case "go":
                 self.go(command.pp)
             
@@ -285,9 +369,7 @@ public class Game {
     }
     
     func saveGame(to location: String) {
-        //let gameJSON =
-        //let gameString = gameJSON.description // convert to string
-        let gameString = "test content"
+        let gameString = self.toJSON().description
         
         do {
             if location.characters.first == "/" { // in absolute directory
@@ -302,16 +384,18 @@ public class Game {
         }
     }
     
-    func loadGame(from location: String) -> JSON {
+    func loadGame(from location: String) {
         do {
             let contents = try readInCurrentDirectory(location) // read string from file
             let jsonGame = JSON.parse(contents) // parse into json
             
-            return jsonGame
+            // FIXME: assuming you want to join this game using the same username as you chose in the beginning
+            
+            self.overwrite(withJSON: jsonGame, asUserWithName: self.user.name) // loading from a file, therefore, you are the user and host
+            self.playing = true // continues game loop of prompts
             
         } catch let error as NSError {
             self.output(error.localizedDescription)
-            return JSON.null
         }
     }
     

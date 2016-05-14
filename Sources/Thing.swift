@@ -39,7 +39,7 @@ public class Thing: Equatable, Hashable {
     
     // ENCODE OBJECT TO JSON
     
-    func toJson() -> JSON {
+    func toJSON() -> JSON {
         var json: JSON = [:]
         
         json["id"] = JSON(self.id)

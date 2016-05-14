@@ -66,7 +66,7 @@ public class Creature: Thing {
     
     // ENCODE OBJECT TO JSON
     
-    override func toJson() -> JSON {
+    override func toJSON() -> JSON {
         var json: JSON = [:]
         
         json["id"] = JSON(self.id)
