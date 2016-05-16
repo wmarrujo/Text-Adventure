@@ -133,7 +133,7 @@ public class Location: Thing {
     // STATUS
     
     func showDescription(caller: Player) -> String {
-        var description = self.description
+        var description = "- " + self.name + " -\n" + self.description
         if !self.contents.isEmpty {
             description += "\n\nYou see around you:"
             for item in self.contents {

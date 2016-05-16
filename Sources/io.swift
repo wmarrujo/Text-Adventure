@@ -79,8 +79,6 @@ func setTextMode(attributes: TextAttribute...) {
             case .BackgroundMagenta: sequence.append("45")
             case .BackgroundCyan:    sequence.append("46")
             case .BackgroundWhite:   sequence.append("47")
-            default:
-                break
         }
     }
     

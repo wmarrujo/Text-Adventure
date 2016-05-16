@@ -158,6 +158,8 @@ public class Game {
     func begin() {
         self.playing = true
         
+        self.output(self.user.location.showDescription(self.user))
+        
         while self.playing {
             gameLoop()
         }
