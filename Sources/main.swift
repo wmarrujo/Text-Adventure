@@ -1,22 +1,5 @@
 import CoreFoundation
-
-
-////////////////////////////////////////////////////////////////
-// TESTS
-///////////////////////////////////////////////////////////////
-
-
-var broom = Item(named: "broom", withDescription: "A sturdy, old broom", andWeight: 5, withAttributes: ["sturdy", "old"])
-var initialLocation = Location(named: "Start Box", withDescription: "A plain, boring, empty room.", withContents: [broom])
-var player = Player(named: "Jeff", withDescription: "you", withHealth: 100, atLocation: initialLocation, withEncumbrence: 12) // and no default inventory
-var secondaryLocation = Location(named: "Hallway", withDescription: "A boring, long hallway.")
-var initialPortal = Portal(named: "Generic Portal", withDescription: "A boring, old portal.", from: initialLocation, to: secondaryLocation)
-var secondaryPortal = Portal(named: "Generic Portal", withDescription: "A boring, old portal.", from: secondaryLocation, to: initialLocation)
-initialLocation.directions["north"] = initialPortal
-secondaryLocation.directions["south"] = secondaryPortal
-
-
-// Utility Functions
+import SwiftyJSON
 
 ////////////////////////////////////////////////////////////////
 // SETUP
@@ -27,15 +10,58 @@ let args = Process.arguments
 
 // Game Variables
 
+let defaultGame = JSON.parse("{\"starting locations\":[0],\"things\":[{\"id\":0,\"type\":\"Location\",\"name\":\"Reception Room\",\"description\":\"This is where you wait while others join or while you load a game from a save file\"}]}")
+
 ////////////////////////////////////////////////////////////////
-// GAME LOOP
+// DEPENDENCIES
 ////////////////////////////////////////////////////////////////
 
-//print(["asdf", "asj", "word"].joinWithSeparator("   "))
-message("Welcome to the game!")
-message(player.location.description)
-
-
-while player.playing {
-    player.input()
+func enterUsername() -> String {
+    print("Enter username: ", terminator: "")
+    var username = ""
+    
+    username = prompt("")
+    
+    return username
 }
+
+func validateUsername(username: String) -> Bool {
+    if username == "" {
+        return false
+    }
+    // TODO: make sure it doesn't match a keyword
+    
+    return true
+}
+
+////////////////////////////////////////////////////////////////
+// GAME
+////////////////////////////////////////////////////////////////
+
+// TODO: show introductory message
+// TODO: show room information
+
+// Get username
+
+clearScreen()
+moveCursorToHome()
+
+var username = ""
+var validUsername = false
+repeat {
+    username = enterUsername()
+    
+    validUsername = validateUsername(username)
+    if !validUsername {
+        print("invalid username")
+    }
+    
+} while !validUsername
+
+// Create User's Game Instance
+
+let game = Game(withJSON: defaultGame, andUserWithName: username)
+
+// Begin the game Execution
+
+game.begin()
