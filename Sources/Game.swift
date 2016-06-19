@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public class Game {
+public class Game: Commander {
     
     // This class is the single connection between the user and the game world
     // it manages the player that the user represents
@@ -198,7 +198,9 @@ public class Game {
         return 0
     }
     
+    ////////////////////////////////
     // USER INTERACTION
+    ////////////////////////////////
     
     func input() {
         do {
@@ -254,109 +256,115 @@ public class Game {
     // VerbPhrase <- Verb (NounPhrase) (PrepositionalPhrase) (Adverb)
     
     // The function that takes the command as a syntax tree and separates out the various data and applies them to the correct action function, or displays an appropriate error message
-    func perform(command: RegularVerbPhrase) {
-        switch command.verb.word {
-            case "quit":
-                if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
-                    // TODO: check for save
-                    quitGame()
-                } else {
-                    self.output("quit failed")
-                }
-            
-            
-            case "save":
-                if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
-                    // trim the leading and trailing quotations if it has them
-                    var location = (command.np as! RegularNounPhrase).noun.word
-                    if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
-                        location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
-                        self.saveGame(to: location)
+    func perform(command: VerbPhrase) {
+        if let command = command as? RegularVerbPhrase {
+            switch command.verb.word {
+                case "quit":
+                    if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                        // TODO: check for save
+                        quitGame()
                     } else {
-                        self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                        self.output("quit failed")
                     }
-                } else {
-                    self.output("I don't understand how it is you want me to save\nThe syntax is:\n\tsave \"filename or full path\"")
-                }
-            
-            
-            case "load":
-                if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
-                    // trim the leading and trailing quotations if it has them
-                    var location = (command.np as! RegularNounPhrase).noun.word
-                    if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
-                        location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
-                        self.loadGame(from: location)
+                
+                
+                case "save":
+                    if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                        // trim the leading and trailing quotations if it has them
+                        var location = (command.np as! RegularNounPhrase).noun.word
+                        if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
+                            location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
+                            self.saveGame(to: location)
+                        } else {
+                            self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                        }
                     } else {
-                        self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                        self.output("I don't understand how it is you want me to save\nThe syntax is:\n\tsave \"filename or full path\"")
                     }
-                } else {
-                    self.output("I don't understand how it is you want me to load\nThe syntax is:\n\tsave \"filename or full path\"")
-                }
-            
-            
-            case "go":
-                self.go(command.pp)
-            
-            
-            case "look":
-                if hasPrepositionalPhrase(command) && isCompound(command.pp) {
-                    switch (command.pp as! RegularPrepositionalPhrase).prep.word {
-                        case "at":
-                            if hasNounPhrase(command) {
-                                self.examine(command.np!, modifier: command.adv)
-                            } else {
-                                self.output("look at what?")
-                            }
-                        default:
-                            self.output("look what?")
-                    }
-                } else if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
-                    self.look()
-                } else {
-                    self.output("You're looking too complicatedly!")
-                }
-            
-            
-            case "examine":
-                if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
-                    self.examine(command.np!, modifier: command.adv)
-                } else {
-                    self.output("examine what?")
-                }
-            
-            
-            case "take":
-                if hasPrepositionalPhrase(command) && !isCompound(command.pp) {
-                    switch (command.pp as! RegularPrepositionalPhrase).prep.word {
-                        case "from":
-                            if hasNounPhrase(command) {
-                                self.take(command.np!, modifier: command.adv)
-                            } else {
-                                self.output("take what from who?")
-                            }
-                        default:
-                            self.output("take how?")
-                    }
-                } else {
-                    if hasNounPhrase(command) {
-                        self.take(command.np!, modifier: command.adv)
+                
+                
+                case "load":
+                    if hasNounPhrase(command) && !isCompound(command.np) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                        // trim the leading and trailing quotations if it has them
+                        var location = (command.np as! RegularNounPhrase).noun.word
+                        if location.characters.first == "\"" && location.characters.last == "\"" { // the "noun" is surrounded by quotations (a.k.a. it's a string not a noun)
+                            location = location.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "\"")) // trim the quotations
+                            self.loadGame(from: location)
+                        } else {
+                            self.output("you tried to enter in a noun as a path! please wrap your location in parentheses")
+                        }
                     } else {
-                        self.output("take what?")
+                        self.output("I don't understand how it is you want me to load\nThe syntax is:\n\tsave \"filename or full path\"")
                     }
-                }
-            
-            
-            case "say":
-                if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
-                    self.say((command.np as! RegularNounPhrase).n.word, modifier: command.adv)
-                } else { // TODO: add support for target
-                    self.output("say what?")
-                }
-            
-            
-            default:
-                self.output("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
+                
+                
+                case "go":
+                    self.go(command.pp)
+                
+                
+                case "look":
+                    if hasPrepositionalPhrase(command) && isCompound(command.pp) {
+                        switch (command.pp as! RegularPrepositionalPhrase).prep.word {
+                            case "at":
+                                if hasNounPhrase(command) {
+                                    self.examine(command.np!, modifier: command.adv)
+                                } else {
+                                    self.output("look at what?")
+                                }
+                            default:
+                                self.output("look what?")
+                        }
+                    } else if !hasNounPhrase(command) && !hasPrepositionalPhrase(command) && !hasAdverb(command) {
+                        self.look()
+                    } else {
+                        self.output("You're looking too complicatedly!")
+                    }
+                
+                
+                case "examine":
+                    if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
+                        self.examine(command.np!, modifier: command.adv)
+                    } else {
+                        self.output("examine what?")
+                    }
+                
+                
+                case "take":
+                    if hasPrepositionalPhrase(command) && !isCompound(command.pp) {
+                        switch (command.pp as! RegularPrepositionalPhrase).prep.word {
+                            case "from":
+                                if hasNounPhrase(command) {
+                                    self.take(command.np!, modifier: command.adv)
+                                } else {
+                                    self.output("take what from who?")
+                                }
+                            default:
+                                self.output("take how?")
+                        }
+                    } else {
+                        if hasNounPhrase(command) {
+                            self.take(command.np!, modifier: command.adv)
+                        } else {
+                            self.output("take what?")
+                        }
+                    }
+                
+                
+                case "say":
+                    if hasNounPhrase(command) && !hasPrepositionalPhrase(command) {
+                        self.say((command.np as! RegularNounPhrase).n.word, modifier: command.adv)
+                    } else { // TODO: add support for target
+                        self.output("say what?")
+                    }
+                
+                
+                default:
+                    self.output("I don't know how to \(command.verb.word) yet") // then the developer forgot to implement from the lexicon
+            }
+        } else if let command = command as? CompoundVerbPhrase {
+            self.output("support for compound commands has not yet been written")
+        } else {
+            self.output("unknown command structure") // should never appear
         }
     }
     
